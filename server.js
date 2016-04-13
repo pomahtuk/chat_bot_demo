@@ -1,14 +1,8 @@
-const https = require("https"),
-  fs = require("fs"),
+const http = require("http"),
   express = require("express"),
   morgan = require("morgan"),
   bodyParser = require("body-parser"),
   responseTime = require("response-time")
-
-const options = {
-  key: fs.readFileSync("./server.key"),
-  cert: fs.readFileSync("./server.crt")
-}
 
 const app = express()
 // log response time
@@ -26,6 +20,6 @@ app.get("/", function (req, res) {
 
 const port = process.env.PORT || 3010
 
-https.createServer(options, app).listen(port, function(){
+http.createServer(app).listen(port, function(){
   console.log(`server started at port ${port}`)
 })
