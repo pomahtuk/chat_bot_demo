@@ -1,31 +1,31 @@
-var https = require('https');
-var fs = require('fs');
-var express = require('express');
-var morgan = require('morgan');
-var bodyParser = require('body-parser');
-var responseTime = require('response-time');
+const https = require("https"),
+  fs = require("fs"),
+  express = require("express"),
+  morgan = require("morgan"),
+  bodyParser = require("body-parser"),
+  responseTime = require("response-time")
 
-var options = {
-    key: fs.readFileSync('./key.pem'),
-    cert: fs.readFileSync('./cert.pem'),
-    // requestCert: false,
-    // rejectUnauthorized: false
-};
+const options = {
+  key: fs.readFileSync("./key.pem"),
+  cert: fs.readFileSync("./cert.pem")
+}
 
-var app = express();
+const app = express()
 // log response time
 app.use(responseTime())
 // log requests
-app.use(morgan('combined'));
+app.use(morgan("combined"))
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.get('/', function (req, res) {
-	res.send('OK');
-});
+app.get("/", function (req, res) {
+  res.send("OK")
+})
 
-var server = https.createServer(options, app).listen(3010, function(){
-    console.log("server started at port 3010");
-});
+const port = process.env.PORT || 3010
+
+https.createServer(options, app).listen(port, function(){
+  console.log(`server started at port ${port}`)
+})
