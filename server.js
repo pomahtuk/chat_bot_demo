@@ -14,12 +14,11 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.get("/", function (req, res) {
-  res.send("OK")
-})
-
-app.get("/.well-known/acme-challenge/QM0y0-vPP2r3ADAUUGIJ9Y0dIAx7w8vC73BHuiV_X0o", function (req, res) {
-  res.send("QM0y0-vPP2r3ADAUUGIJ9Y0dIAx7w8vC73BHuiV_X0o.XDMze8d_PPhG8GZIGrt3M_RJ7-wXSa3chnjSXc0cVuI")
+app.get("/webhook/", function (req, res) {
+  if (req.query["hub.verify_token"] === "<validation_token>") {
+    res.send(req.query["hub.challenge"])
+  }
+  res.send("Error, wrong validation token")
 })
 
 const port = process.env.PORT || 3010
