@@ -18,6 +18,10 @@ app.get("/", function (req, res) {
   res.send("OK")
 })
 
+app.get("/.well-known/acme-challenge/QM0y0-vPP2r3ADAUUGIJ9Y0dIAx7w8vC73BHuiV_X0o", function (req, res) {
+  res.send("QM0y0-vPP2r3ADAUUGIJ9Y0dIAx7w8vC73BHuiV_X0o.XDMze8d_PPhG8GZIGrt3M_RJ7-wXSa3chnjSXc0cVuI")
+})
+
 const port = process.env.PORT || 3010
 
 http.createServer(app).listen(port, function(){
