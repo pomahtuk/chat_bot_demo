@@ -6,8 +6,8 @@ const https = require("https"),
   responseTime = require("response-time")
 
 const options = {
-  key: fs.readFileSync("./key.pem"),
-  cert: fs.readFileSync("./cert.pem")
+  key: fs.readFileSync("./server.key"),
+  cert: fs.readFileSync("./server.crt")
 }
 
 const app = express()
