@@ -2,7 +2,7 @@
 
 const http = require("http"),
   express = require("express"),
-  https = require("https"),
+  request = require("superagent"),
   // morgan = require("morgan"),
   bodyParser = require("body-parser"),
   responseTime = require("response-time")
@@ -18,25 +18,63 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 
-const token = "CAAQOo8VIiKYBANPgUjv5zpwxQPynohHYps9ZAJDa3HCSZBSdHbgSBNQHJ0m44Vzlhgi2puGWXgYURX46jp6INSDqLYxHjRugA5wfvgWZC9XRZAKD4EtjPGSxGAYmuVIzeSnbkliKorwilmZCGcJfZCFuV66hAZAlcZAJPRSm7wfXm88UTC78BYQCzZBFC9J3R7xcZD"
+const pageToken = "CAAQOo8VIiKYBANPgUjv5zpwxQPynohHYps9ZAJDa3HCSZBSdHbgSBNQHJ0m44Vzlhgi2puGWXgYURX46jp6INSDqLYxHjRugA5wfvgWZC9XRZAKD4EtjPGSxGAYmuVIzeSnbkliKorwilmZCGcJfZCFuV66hAZAlcZAJPRSm7wfXm88UTC78BYQCzZBFC9J3R7xcZD"
 
-function sendTextMessage(sender, text) {
-  let messageData = {
+function sendMessage (sender, message) {
+  request
+    .post("https://graph.facebook.com/v2.6/me/messages")
+    .query({access_token: pageToken})
+    .send({
+      recipient: {
+        id: sender
+      },
+      message: message
+    })
+    .end((err, res) => {
+      if (err) {
+        console.log("Error sending message: ", err)
+      } else if (res.body.error) {
+        console.log("Error: ", res.body.error)
+      }
+    })
+}
+
+function sendTextMessage (sender, text) {
+  sendMessage(sender, {
     text: text
-  }
-  https.request({
-    url: "https://graph.facebook.com/v2.6/me/messages",
-    qs: {access_token: token},
-    method: "POST",
-    json: {
-      recipient: {id: sender},
-      message: messageData
-    }
-  }, function(error, response) {
-    if (error) {
-      console.log("Error sending message: ", error)
-    } else if (response.body.error) {
-      console.log("Error: ", response.body.error)
+  })
+}
+
+function sendGenericMessage (sender) {
+  sendMessage(sender, {
+    attachment: {
+      type: "template",
+      payload: {
+        template_type: "generic",
+        elements: [{
+          title: "First card",
+          subtitle: "Element #1 of an hscroll",
+          image_url: "http://messengerdemo.parseapp.com/img/rift.png",
+          buttons: [{
+            type: "web_url",
+            url: "https://www.messenger.com/",
+            title: "Web url"
+          }, {
+            type: "postback",
+            title: "Postback",
+            payload: "Payload for first element in a generic bubble"
+          }]
+        }, {
+          title: "Second card",
+          subtitle: "Element #2 of an hscroll",
+          image_url: "http://messengerdemo.parseapp.com/img/gearvr.png",
+          buttons: [{
+            type: "postback",
+            title: "Postback",
+            payload: "Payload for second element in a generic bubble"
+          }]
+        }]
+      }
     }
   })
 }
@@ -49,16 +87,25 @@ app.get("/webhook/", function (req, res) {
 })
 
 app.post("/webhook/", function (req, res) {
-  let messaging_events = req.body.entry[0].messaging
-  for (let i = 0; i < messaging_events.length; i++) {
-    let event = req.body.entry[0].messaging[i]
-    let sender = event.sender.id
-    if (event.message && event.message.text) {
-      let text = event.message.text
-      // Handle a text message from this sender
-      sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200))
+  let messagingEvents = req.body.entry[0].messaging
+
+  messagingEvents.forEach((event) => {
+    const sender = event.sender.id
+
+    if (event.postback) {
+      const text = JSON.stringify(event.postback).substring(0, 200)
+      sendTextMessage(sender, "Postback received: " + text)
+    } else if (event.message && event.message.text) {
+      const text = event.message.text.trim().substring(0, 200)
+
+      if (text.toLowerCase() === "generic") {
+        sendGenericMessage(sender)
+      } else {
+        sendTextMessage(sender, "Text received, echo: " + text)
+      }
     }
-  }
+  })
+
   res.sendStatus(200)
 })
 
