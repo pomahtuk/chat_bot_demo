@@ -18,5 +18,5 @@
     "node-wit": "^3.0.0",
     "response-time": "^2.3.1",
     "superagent": "^1.8.3"
-  },
+  }
 }
