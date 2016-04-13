@@ -1,6 +1,8 @@
+"use strict"
+
 const http = require("http"),
   express = require("express"),
-  https = require('https'),
+  https = require("https"),
   // morgan = require("morgan"),
   bodyParser = require("body-parser"),
   responseTime = require("response-time")
@@ -39,7 +41,6 @@ function sendTextMessage(sender, text) {
   })
 }
 
-
 app.get("/webhook/", function (req, res) {
   if (req.query["hub.verify_token"] === "use_the_force_noob") {
     res.send(req.query["hub.challenge"])
@@ -55,7 +56,7 @@ app.post("/webhook/", function (req, res) {
     if (event.message && event.message.text) {
       let text = event.message.text
       // Handle a text message from this sender
-      sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200));
+      sendTextMessage(sender, "Text received, echo: "+ text.substring(0, 200))
     }
   }
   res.sendStatus(200)
