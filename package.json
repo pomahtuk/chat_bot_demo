@@ -1,0 +1,22 @@
+{
+  "name": "izi_bot",
+  "version": "1.0.0",
+  "description": "Sample server for bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bot",
+    "izi"
+  ],
+  "author": "pomahtuk89",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "morgan": "^1.7.0",
+    "node-wit": "^3.0.0",
+    "response-time": "^2.3.1"
+  }
+}
