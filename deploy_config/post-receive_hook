@@ -1,0 +1,11 @@
+#!/bin/sh
+
+error_exit ()
+{
+  echo "$1" 1>&2
+  exit 1
+}
+
+git --work-tree=/var/www/izi-bot --git-dir=/var/git/izi-bot.git checkout -f
+cd /var/www/izi-bot || error_exit "error changing directory!. now exiting..."
+npm install || error_exit "error running npm install! now exiting ..."
