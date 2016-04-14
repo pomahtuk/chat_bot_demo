@@ -1,6 +1,5 @@
-# the IP(s) on which your node server is running. I chose port 3000.
 upstream izi_bot {
-  server 127.0.0.1:3000;
+  server 127.0.0.1:3010;
   keepalive 8;
 }
 
@@ -9,7 +8,7 @@ server {
 
   listen 0.0.0.0:80;
   listen 443 ssl;
-  server_name s052d7cc1.fastvps-server.com s052d7cc1.fastvps-server;
+  server_name s052d7cc1.fastvps-server.com;
   access_log /var/log/nginx/s052d7cc1.fastvps-server.com.log;
 
   # setup certificates
@@ -28,7 +27,7 @@ server {
   add_header Strict-Transport-Security max-age=15768000;
 
   # only handle https
-  rewrite ^/(.*) https://s052d7cc1.fastvps-server.com/$1 permanent;
+  # rewrite ^/(.*) https://s052d7cc1.fastvps-server.com/$1 permanent;
 
   # pass the request to the node.js server with the correct headers
   # and much more can be added, see nginx config options
@@ -37,11 +36,14 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header Host $http_host;
     proxy_set_header X-NginX-Proxy true;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
 
+    proxy_read_timeout 5m;
+    proxy_connect_timeout 5m;
     proxy_pass http://izi_bot/;
     proxy_redirect off;
   }
