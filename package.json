@@ -4,7 +4,9 @@
   "description": "Sample server for bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nf start",
+    "dev": "nf run nodemon server.js"
   },
   "keywords": [
     "bot",
@@ -15,6 +17,8 @@
   "dependencies": {
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
+    "foreman": "1.4.1",
+    "newrelic": "^1.26.2",
     "node-wit": "^3.0.0",
     "response-time": "^2.3.1",
     "superagent": "^1.8.3"

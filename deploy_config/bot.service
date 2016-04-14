@@ -1,0 +1,14 @@
+[Service]
+WorkingDirectory=/var/www/izi-bot
+ExecStart=/usr/bin/nf start
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=izi-bot
+User=web
+Group=web
+Environment='NODE_ENV=production'
+
+[Install]
+WantedBy=multi-user.target
