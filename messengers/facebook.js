@@ -4,9 +4,9 @@ const request = require("superagent")
 
 function facebookMessengerInit(app) {
   const CONFIG = {
-    PAGE_TOKEN: app.get('FB_PAGE_TOKEN'),
-    FB_VERIFY_TOKEN: app.get('FB_VERIFY_TOKEN'),
-    FB_PAGE_ID: app.get('FB_PAGE_ID')
+    PAGE_TOKEN: app.get("FB_PAGE_TOKEN"),
+    FB_VERIFY_TOKEN: app.get("FB_VERIFY_TOKEN"),
+    FB_PAGE_ID: app.get("FB_PAGE_ID")
   }
 
   const SESSIONS = {}
@@ -73,7 +73,7 @@ function facebookMessengerInit(app) {
   // See the Webhook reference
   // https://developers.facebook.com/docs/messenger-platform/webhook-reference
   const getFirstMessagingEntry = (body) => {
-    const val = body.object == 'page' &&
+    const val = body.object == "page" &&
       body.entry &&
       Array.isArray(body.entry) &&
       body.entry.length > 0 &&
@@ -83,7 +83,7 @@ function facebookMessengerInit(app) {
       Array.isArray(body.entry[0].messaging) &&
       body.entry[0].messaging.length > 0 &&
       body.entry[0].messaging[0]
-    ;
+
     return val || null
   }
 
@@ -91,7 +91,7 @@ function facebookMessengerInit(app) {
   const findOrCreateSession = (fbid) => {
     let sessionId
 
-    // Let's see if we already have a session for the user fbid
+    // Let"s see if we already have a session for the user fbid
     Object.keys(SESSIONS).forEach(key => {
       if (SESSIONS[key].fbid === fbid) {
         // Yep, got it!
@@ -100,7 +100,7 @@ function facebookMessengerInit(app) {
     })
 
     if (!sessionId) {
-      // No session found for user fbid, let's create a new one
+      // No session found for user fbid, let"s create a new one
       sessionId = new Date().toISOString()
       SESSIONS[sessionId] = {
         fbid: fbid,
@@ -113,13 +113,13 @@ function facebookMessengerInit(app) {
 
   app.get("/webhook/", function (req, res) {
     if (!CONFIG.FB_VERIFY_TOKEN) {
-      throw new Error('missing FB_VERIFY_TOKEN');
+      throw new Error("missing FB_VERIFY_TOKEN")
     }
-    if (req.query['hub.mode'] === 'subscribe' &&
-      req.query['hub.verify_token'] === CONFIG.FB_VERIFY_TOKEN) {
-      res.send(req.query['hub.challenge']);
+    if (req.query["hub.mode"] === "subscribe" &&
+      req.query["hub.verify_token"] === CONFIG.FB_VERIFY_TOKEN) {
+      res.send(req.query["hub.challenge"])
     } else {
-      res.sendStatus(400);
+      res.sendStatus(400)
     }
   })
 
