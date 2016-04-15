@@ -11,11 +11,38 @@ function facebookMessengerInit(app) {
     WIT_TOKEN: app.get("WIT_TOKEN")
   }
 
-  const wit = makeWitBot(CONFIG.WIT_TOKEN)
+  const wit = makeWitBot(CONFIG.WIT_TOKEN, {
+    say: (sessionId, msg, cb) => {
+      // Our bot has something to say!
+      // Let's retrieve the Facebook user whose session belongs to
+      const recipientId = sessions[sessionId].fbid;
+      if (recipientId) {
+        // Yay, we found our recipient!
+        // Let's forward our bot response to her.
+        sendMessage(recipientId, msg, (err, data) => {
+          if (err) {
+            console.log(
+              "Oops! An error occurred while forwarding the response to",
+              recipientId,
+              ":",
+              err
+            );
+          }
+
+          // Let's give the wheel back to our bot
+          cb();
+        });
+      } else {
+        console.log("Oops! Couldnt find user for session:", sessionId);
+        // Giving the wheel back to our bot
+        cb();
+      }
+    }
+  })
 
   const SESSIONS = {}
 
-  function sendMessage (sender, message) {
+  function sendMessage (sender, message, cb) {
     request
       .post("https://graph.facebook.com/v2.6/me/messages")
       .query({access_token: CONFIG.PAGE_TOKEN})
@@ -25,11 +52,14 @@ function facebookMessengerInit(app) {
         },
         message: message
       })
-      .end((err, res) => {
+      .end((err, res, data) => {
         if (err) {
           console.log("Error sending message: ", err)
         } else if (res.body.error) {
           console.log("Error: ", res.body.error)
+        }
+        if (cb) {
+          cb(err || data.error && data.error.message, data);
         }
       })
   }
@@ -146,12 +176,13 @@ function facebookMessengerInit(app) {
       const atts = messaging.message.attachments
 
       if (atts) {
+        console.log("got masage wit attachment")
         // We received an attachment
         // Let's reply with an automatic message
         sendTextMessage(sender, "Sorry I can only process text messages for now.")
       } else if (msg) {
         // We received a text message
-
+        console.log("got processable message")
         // Let's forward the message to the Wit.ai Bot Engine
         // This will run all actions until our bot has nothing left to do
         wit.runActions(

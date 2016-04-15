@@ -20,7 +20,7 @@ const lastEntityValue = (entities, entity) => {
 
 const actions = {
   say: (sessionId, msg, cb) => {
-    //console.log(msg);
+    console.log(msg);
     cb()
   },
 
@@ -64,7 +64,7 @@ const actions = {
   }
 }
  
-const makeClient = (token) => new Wit(token, actions)
+const makeClient = (token, specificActions) => new Wit(token, Object.assign(actions, specificActions))
 
 module.exports = makeClient
 
