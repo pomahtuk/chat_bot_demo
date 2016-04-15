@@ -15,7 +15,7 @@ function facebookMessengerInit(app) {
     say: (sessionId, msg, cb) => {
       // Our bot has something to say!
       // Let's retrieve the Facebook user whose session belongs to
-      const recipientId = sessions[sessionId].fbid;
+      const recipientId = SESSIONS[sessionId].fbid;
       if (recipientId) {
         // Yay, we found our recipient!
         // Let's forward our bot response to her.
@@ -161,6 +161,7 @@ function facebookMessengerInit(app) {
   app.post("/webhook/", (req, res) => {
     // Parsing the Messenger API response
     const messaging = getFirstMessagingEntry(req.body)
+
     if (messaging && messaging.message && messaging.recipient.id === CONFIG.FB_PAGE_ID) {
       // Yay! We got a new message!
 
@@ -188,7 +189,7 @@ function facebookMessengerInit(app) {
         wit.runActions(
           sessionId, // the user's current session
           msg, // the user's message 
-          sessions[sessionId].context, // the user's current session state
+          SESSIONS[sessionId].context, // the user's current session state
           (error, context) => {
             if (error) {
               console.log("Oops! Got an error from Wit:", error)
@@ -197,7 +198,7 @@ function facebookMessengerInit(app) {
               // Now it's waiting for further messages to proceed.
               console.log("Waiting for futher messages.")
               // Updating the user"s current session state
-              sessions[sessionId].context = context
+              SESSIONS[sessionId].context = context
             }
           }
         );
