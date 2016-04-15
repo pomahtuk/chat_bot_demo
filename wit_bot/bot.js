@@ -72,8 +72,6 @@ const actions = {
 }
  
 const makeClient = function (token, specificActions) {
-  console.log(specificActions)
-  
   return new Wit(token, Object.assign(actions, specificActions))
 } 
 
