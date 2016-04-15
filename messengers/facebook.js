@@ -56,7 +56,7 @@ function facebookMessengerInit(app) {
         //   console.log("Error: ", res.body.error)
         // }
         if (cb) {
-          cb(err || data.error && res.body.error, data);
+          cb(err || data.error && res.body.error, res.body);
         }
       })
   }
