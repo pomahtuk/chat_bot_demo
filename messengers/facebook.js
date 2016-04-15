@@ -1,6 +1,6 @@
 "use strict"
 
-const request = require("superagent")
+const request = require("request");
 const makeWitBot = require("../wit_bot/bot.js")
 
 function facebookMessengerInit(app) {
@@ -38,27 +38,32 @@ function facebookMessengerInit(app) {
 
   const SESSIONS = {}
 
-  function sendMessage (sender, message, cb) {
-    console.log("about to send fb mesage", sender, message)
-    request
-      .post("https://graph.facebook.com/v2.6/me/messages")
-      .query({access_token: CONFIG.PAGE_TOKEN})
-      .send({
+  // See the Send API reference
+  // https://developers.facebook.com/docs/messenger-platform/send-api-reference
+  const fbReq = request.defaults({
+    uri: 'https://graph.facebook.com/me/messages',
+    method: 'POST',
+    json: true,
+    qs: { access_token: CONFIG.FB_PAGE_TOKEN },
+    headers: {'Content-Type': 'application/json'}
+  })
+
+  const sendMessage = (recipientId, msg, cb) => {
+    const opts = {
+      form: {
         recipient: {
-          id: sender
+          id: recipientId,
         },
-        message: message
-      })
-      .end((err, res) => {
-        // if (err) {
-        //   console.log("Error sending message: ", err)
-        // } else if (res.body.error) {
-        //   console.log("Error: ", res.body.error)
-        // }
-        if (cb) {
-          cb(err || data.error && res.body.error, res.body);
-        }
-      })
+        message: {
+          text: msg,
+        },
+      },
+    };
+    fbReq(opts, (err, resp, data) => {
+      if (cb) {
+        cb(err || data.error && data.error.message, data)
+      }
+    })
   }
 
   function sendTextMessage (sender, text) {
