@@ -62,7 +62,7 @@ const actions = {
     cb(context)
   },
   
-  cleanupSessionContext (context, cb) => {
+  cleanupSessionContext: (context, cb) => {
     delete context.intent
     delete context.location
     delete context.response
