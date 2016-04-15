@@ -66,12 +66,16 @@ const actions = {
     delete context.intent
     delete context.location
     delete context.response
-    
+
     cb()
   }
 }
  
-const makeClient = (token, specificActions) => new Wit(token, Object.assign(actions, specificActions))
+const makeClient = function (token, specificActions) {
+  console.log(specificActions)
+  
+  return new Wit(token, Object.assign(actions, specificActions))
+} 
 
 module.exports = makeClient
 
