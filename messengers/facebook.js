@@ -13,8 +13,6 @@ function facebookMessengerInit(app) {
 
   const wit = makeWitBot(CONFIG.WIT_TOKEN, {
     say: (sessionId, msg, cb) => {
-      console.log("bot should say:", msg)
-
       // Our bot has something to say!
       // Let's retrieve the Facebook user whose session belongs to
       const recipientId = SESSIONS[sessionId].fbid;
