@@ -23,7 +23,7 @@ function facebookMessengerInit(app) {
         // Let's forward our bot response to her.
         sendMessage(recipientId, msg, (err, data) => {
           if (err) {
-            console.log("Oops! An error occurred while forwarding the response");
+            console.log("Oops! An error occurred while forwarding the response", err);
           }
           // Let's give the wheel back to our bot
           cb();
