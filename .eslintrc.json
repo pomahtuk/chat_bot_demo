@@ -10,8 +10,8 @@
     "rules": {
         "no-console": 0,
         "strict": [
-            "error", 
-            "safe"
+            0, 
+            "global"
         ],
         "indent": [
             "error", 
@@ -23,7 +23,7 @@
         ],
         "quotes": [
             "error", 
-            "double"
+            "single"
         ],
         "semi": [
             "error", 

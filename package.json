@@ -4,7 +4,7 @@
   "description": "Sample server for bot",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha",
+    "test": "./node_modules/mocha/bin/mocha --recursive --harmony_default_parameters",
     "start": "nf start",
     "dev": "nf run nodemon server.js"
   },
@@ -24,5 +24,8 @@
     "node-wit": "^3.0.0",
     "request": "^2.71.0",
     "response-time": "^2.3.1"
+  },
+  "devDependencies": {
+    "supertest": "^1.2.0"
   }
 }
