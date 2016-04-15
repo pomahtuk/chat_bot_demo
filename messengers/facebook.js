@@ -47,7 +47,6 @@ function facebookMessengerInit(app) {
   })
 
   const sendMessage = (recipientId, msg, cb) => {
-    console.log(recipientId);
     const opts = {
       form: {
         recipient: {
