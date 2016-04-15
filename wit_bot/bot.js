@@ -63,8 +63,8 @@ const actions = {
     cb(context)
   }
 }
-
-function makeClient(token) => new Wit(token, actions)
+ 
+const makeClient = (token) => new Wit(token, actions)
 
 module.exports = makeClient
 
