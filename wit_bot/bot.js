@@ -1,3 +1,5 @@
+"use strict"
+
 const Wit = require("node-wit").Wit
 
 const lastEntityValue = (entities, entity) => {
