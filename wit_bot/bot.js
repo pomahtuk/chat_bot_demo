@@ -1,15 +1,6 @@
 const Wit = require("node-wit").Wit
 
-const token = (() => {
-  if (process.argv.length !== 3) {
-    console.log("usage: node index.js <wit-token>")
-    process.exit(1)
-  }
-  return process.argv[2]
-})()
-
 const lastEntityValue = (entities, entity) => {
-
   let entityVal = entities && entities[entity]
 
   if (entityVal) {
@@ -38,7 +29,6 @@ const actions = {
     const intent = lastEntityValue(entities, "intent")
 
     // what should be done if location not recognised?
-
     if (location) {
       context.location = location
     }
@@ -55,7 +45,7 @@ const actions = {
   },
 
   fetchObjectsByLocation: (context, cb) => {
-    console.log("debug object fetcher", context.intent)
+    // console.log("debug object fetcher", context.intent)
     // Here should go the api call, e.g.:
     // context.forecast = apiCall(context.location)
     switch (context.intent) {
@@ -72,5 +62,7 @@ const actions = {
   }
 }
 
-const client = new Wit(token, actions)
-client.interactive()
+function makeClient(token) => new Wit(token, actions)
+
+module.exports = makeClient
+

@@ -1,13 +1,17 @@
 "use strict"
 
 const request = require("superagent")
+const makeWitBot = require("../wit_bot/bot.js")
 
 function facebookMessengerInit(app) {
   const CONFIG = {
     PAGE_TOKEN: app.get("FB_PAGE_TOKEN"),
     FB_VERIFY_TOKEN: app.get("FB_VERIFY_TOKEN"),
-    FB_PAGE_ID: app.get("FB_PAGE_ID")
+    FB_PAGE_ID: app.get("FB_PAGE_ID"),
+    WIT_TOKEN: app.get("WIT_TOKEN")
   }
+
+  const wit = makeWitBot(CONFIG.WIT_TOKEN)
 
   const SESSIONS = {}
 
@@ -123,28 +127,54 @@ function facebookMessengerInit(app) {
     }
   })
 
-  app.post("/webhook/", function (req, res) {
-    let messagingEvents = req.body.entry[0].messaging
+  // Message handler
+  app.post("/webhook/", (req, res) => {
+    // Parsing the Messenger API response
+    const messaging = getFirstMessagingEntry(req.body)
+    if (messaging && messaging.message && messaging.recipient.id === FB_PAGE_ID) {
+      // Yay! We got a new message!
 
-    messagingEvents.forEach((event) => {
-      const sender = event.sender.id
+      // We retrieve the Facebook user ID of the sender
+      const sender = messaging.sender.id
 
-      if (event.postback) {
-        const text = JSON.stringify(event.postback).substring(0, 200)
-        sendTextMessage(sender, "Postback received: " + text)
-      } else if (event.message && event.message.text) {
-        const text = event.message.text.trim().substring(0, 200)
+      // We retrieve the user's current session, or create one if it doesn'"'t exist
+      // This is needed for our bot to figure out the conversation history
+      const sessionId = findOrCreateSession(sender)
 
-        if (text.toLowerCase() === "generic") {
-          sendGenericMessage(sender)
-        } else {
-          sendTextMessage(sender, "Text received, echo: " + text)
-        }
+      // We retrieve the message content
+      const msg = messaging.message.text
+      const atts = messaging.message.attachments
+
+      if (atts) {
+        // We received an attachment
+        // Let's reply with an automatic message
+        sendTextMessage(sender, "Sorry I can only process text messages for now.")
+      } else if (msg) {
+        // We received a text message
+
+        // Let's forward the message to the Wit.ai Bot Engine
+        // This will run all actions until our bot has nothing left to do
+        wit.runActions(
+          sessionId, // the user's current session
+          msg, // the user's message 
+          sessions[sessionId].context, // the user's current session state
+          (error, context) => {
+            if (error) {
+              console.log("Oops! Got an error from Wit:", error)
+            } else {
+              // Our bot did everything it has to do.
+              // Now it's waiting for further messages to proceed.
+              console.log("Waiting for futher messages.")
+              // Updating the user"s current session state
+              sessions[sessionId].context = context
+            }
+          }
+        );
       }
-    })
-
+    }
     res.sendStatus(200)
   })
+
 }
 
 module.exports = facebookMessengerInit
