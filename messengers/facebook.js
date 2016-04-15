@@ -1,11 +1,11 @@
 "use strict"
 
-const request = require("request");
+const request = require("request")
 const makeWitBot = require("../wit_bot/bot.js")
 
 function facebookMessengerInit(app) {
   const CONFIG = {
-    PAGE_TOKEN: app.get("FB_PAGE_TOKEN"),
+    FB_PAGE_TOKEN: app.get("FB_PAGE_TOKEN"),
     FB_VERIFY_TOKEN: app.get("FB_VERIFY_TOKEN"),
     FB_PAGE_ID: app.get("FB_PAGE_ID"),
     WIT_TOKEN: app.get("WIT_TOKEN")
