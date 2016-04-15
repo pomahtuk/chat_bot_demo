@@ -13,7 +13,7 @@ function facebookMessengerInit(app) {
 
   const wit = makeWitBot(CONFIG.WIT_TOKEN, {
     say: (sessionId, msg, cb) => {
-      console.log(msg)
+      console.log("bot should say:", msg)
 
       // Our bot has something to say!
       // Let's retrieve the Facebook user whose session belongs to
@@ -39,6 +39,7 @@ function facebookMessengerInit(app) {
   const SESSIONS = {}
 
   function sendMessage (sender, message, cb) {
+    console.log("about to send fb mesage", sender, message)
     request
       .post("https://graph.facebook.com/v2.6/me/messages")
       .query({access_token: CONFIG.PAGE_TOKEN})
@@ -48,14 +49,14 @@ function facebookMessengerInit(app) {
         },
         message: message
       })
-      .end((err, res, data) => {
-        if (err) {
-          console.log("Error sending message: ", err)
-        } else if (res.body.error) {
-          console.log("Error: ", res.body.error)
-        }
+      .end((err, res) => {
+        // if (err) {
+        //   console.log("Error sending message: ", err)
+        // } else if (res.body.error) {
+        //   console.log("Error: ", res.body.error)
+        // }
         if (cb) {
-          cb(err || data.error && data.error.message, data);
+          cb(err || data.error && res.body.error, data);
         }
       })
   }
