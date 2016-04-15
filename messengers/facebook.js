@@ -13,6 +13,8 @@ function facebookMessengerInit(app) {
 
   const wit = makeWitBot(CONFIG.WIT_TOKEN, {
     say: (sessionId, msg, cb) => {
+      console.log(msg)
+
       // Our bot has something to say!
       // Let's retrieve the Facebook user whose session belongs to
       const recipientId = SESSIONS[sessionId].fbid;
@@ -21,14 +23,8 @@ function facebookMessengerInit(app) {
         // Let's forward our bot response to her.
         sendMessage(recipientId, msg, (err, data) => {
           if (err) {
-            console.log(
-              "Oops! An error occurred while forwarding the response to",
-              recipientId,
-              ":",
-              err
-            );
+            console.log("Oops! An error occurred while forwarding the response");
           }
-
           // Let's give the wheel back to our bot
           cb();
         });

@@ -20,7 +20,6 @@ const lastEntityValue = (entities, entity) => {
 
 const actions = {
   say: (sessionId, msg, cb) => {
-    console.log(msg);
     cb()
   },
 
