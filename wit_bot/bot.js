@@ -19,16 +19,6 @@ const lastEntityValue = (entities, entity) => {
   return null;
 };
 
-function saveSessionData (sessionId, context, cb) {
-  Session.findByIdAndUpdate(sessionId, { context: context }, { new: true }).then(function (sessionData) {
-    console.log('session data saved by bot', sessionData);
-    cb(context);
-  }, function (err) {
-    console.log('Error fetching user session, fail', err);
-    cb(context);
-  });
-}
-
 const actions = {
   say: (sessionId, msg, cb) => {
     console.log('bot will say this using default handler! ==', msg);
@@ -48,9 +38,7 @@ const actions = {
       context.intent = intent;
     }
 
-    saveSessionData(sessionId, context, cb);
-
-    // cb(context);
+    cb(context);
   },
 
   error: (sessionId, context, msg) => {
@@ -71,8 +59,7 @@ const actions = {
       console.log('nope');
     }
 
-    saveSessionData(sessionId, context, cb);
-    // cb(context);
+    cb(context);
   },
   
   cleanupSessionContext: (sessionId, context, cb) => {
@@ -80,7 +67,7 @@ const actions = {
     delete context.location;
     delete context.response;
 
-    saveSessionData(sessionId, context, cb);
+    cb(context);
   }
 };
  
