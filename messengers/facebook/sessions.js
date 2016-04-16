@@ -48,10 +48,13 @@ const findOrCreateSessionBySenderId = (senderId) => {
 
   if (!sessionId) {
     // No session found for user fbid, let's create a new one
-    sessions[sessionId] = new Session(null, {
+    let newSession = new Session(null, {
       fbid: senderId,
       context: {}
     })
+
+    sessionId = newSession.id
+    sessions[sessionId] = newSession
   }
 
   return sessions[sessionId]
