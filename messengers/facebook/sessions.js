@@ -7,7 +7,7 @@ let sessions = {}
 class Session {
   constructor(id, sesionParams = {senderId: null, context: null}) {
     this.id = id || new Date().toISOString()
-    this.sesionParams = sesionParams
+    Object.assign(this, sesionParams)
   }
 
   getContext() {
