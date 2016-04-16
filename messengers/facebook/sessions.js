@@ -21,6 +21,7 @@ class Session {
 }
 
 function findOrCreateSession (sessionId) {
+  console.log(sessions)
   // Let's see if we already have a session for the user fbid
   let hasThisSessionObject = Object.keys(sessions).indexOf(sessionId) > 0
 
