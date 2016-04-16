@@ -5,8 +5,8 @@
 let sessions = {}
 
 class Session {
-  constructor(sesionParams = {senderId: null, context: null}) {
-    this.id = new Date().toISOString()
+  constructor(id, sesionParams = {senderId: null, context: null}) {
+    this.id = id || new Date().toISOString()
     this.sesionParams = sesionParams
   }
 
@@ -26,7 +26,7 @@ function findOrCreateSession (sessionId) {
 
   if (!hasThisSessionObject) {
     // No session found for sessionId, let's create a new one
-    sessions[sessionId] = new Session()
+    sessions[sessionId] = new Session(sessionId)
   }
 
   return sessions[sessionId]
