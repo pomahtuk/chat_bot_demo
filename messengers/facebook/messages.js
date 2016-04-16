@@ -31,6 +31,9 @@ const sendMessage = (recipientId, msg, cb) => {
 };
 
 function sendTextMessage (sender, text) {
+
+  console.log('text message outhoing', text, sender);
+
   sendMessage(sender, {
     text: text
   });
