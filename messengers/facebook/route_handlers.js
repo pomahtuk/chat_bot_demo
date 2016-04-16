@@ -36,6 +36,8 @@ function mainSessionCallback (sessionData, messaging) {
     // Let's reply with an automatic message
     fbMessages.sendTextMessage(sessionData.senderId, 'Sorry I can only process text messages for now.');
   } else if (msg) {
+    console.log('Received from user:', msg);
+
     // We received a text message
     // Let's forward the message to the Wit.ai Bot Engine
     // This will run all actions until our bot has nothing left to do
