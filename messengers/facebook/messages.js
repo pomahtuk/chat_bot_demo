@@ -12,7 +12,7 @@ const fbReq = request.defaults({
   headers: { 'Content-Type': 'application/json' }
 });
 
-const sendMessage = (recipientId, msg, cb) => {
+const sendMessage = (recipientId, msg, messageCallback) => {
   console.log(`fbMessages about to send this: "${msg.text}" to ${recipientId}`);
 
   const opts = {
@@ -24,8 +24,9 @@ const sendMessage = (recipientId, msg, cb) => {
     }
   };
   fbReq(opts, (err, resp, data) => {
-    if (cb) {
-      cb(err || data.error && data.error.message, data);
+    console.log('we sent request and about to execute callback');
+    if (messageCallback) {
+      messageCallback(err || data.error && data.error.message, data);
     }
   });
 };
