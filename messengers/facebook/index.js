@@ -1,12 +1,12 @@
-'use strict'
+'use strict';
 
-const fbRoutes = require('./routes.js')
-const fbActions = require('./actions.js')
-const makeWitBot = require('../../wit_bot/bot.js')
+const fbRouteHandlers = require('./route_handlers.js');
+const express = require('express');
+const router = express.Router();
 
-function facebookMessengerInit (app) {
-  const wit = makeWitBot(app.get('WIT_TOKEN'), fbActions)
-  fbRoutes('/webhook', app, wit)
-}
+router.get('/', fbRouteHandlers.facebookVerification);
+// Message handler
+router.post('/', fbRouteHandlers.mainRoute);
 
-module.exports = facebookMessengerInit
+module.exports = router;
+

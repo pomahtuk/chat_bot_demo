@@ -1,21 +1,13 @@
-/* global describe, beforeEach, afterEach, it */
+/* global describe, it */
 
 'use strict'
 
 const request = require('supertest')
+const app = require('../server.js')
+const agent = request.agent(app)
 
 describe('Base server check', function () {
-  let server
-
-  beforeEach(function () {
-    server = require('../server.js')
-  })
-
-  afterEach(function () {
-    server.close()
-  })
-
   it('return 404 to all routes expect specified', function testPath(done) {
-    request(server).get('/foo/bar').expect(404, done)
+    agent.get('/foo/bar').expect(404, done)
   })
 })

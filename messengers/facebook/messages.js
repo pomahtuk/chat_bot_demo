@@ -1,6 +1,6 @@
-'use strict'
+'use strict';
 
-const request = require('request')
+const request = require('request');
 
 // See the Send API reference
 // https://developers.facebook.com/docs/messenger-platform/send-api-reference
@@ -9,8 +9,8 @@ const fbReq = request.defaults({
   method: 'POST',
   json: true,
   qs: { access_token: process.env.FACEBOOK_TOKEN },
-  headers: {'Content-Type': 'application/json'}
-})
+  headers: { 'Content-Type': 'application/json' }
+});
 
 const sendMessage = (recipientId, msg, cb) => {
   const opts = {
@@ -20,18 +20,18 @@ const sendMessage = (recipientId, msg, cb) => {
       },
       message: msg
     }
-  }
+  };
   fbReq(opts, (err, resp, data) => {
     if (cb) {
-      cb(err || data.error && data.error.message, data)
+      cb(err || data.error && data.error.message, data);
     }
-  })
-}
+  });
+};
 
 function sendTextMessage (sender, text) {
   sendMessage(sender, {
     text: text
-  })
+  });
 }
 
 function sendGenericMessage (sender) {
@@ -65,10 +65,10 @@ function sendGenericMessage (sender) {
         }]
       }
     }
-  })
+  });
 }
 
 module.exports = {
   sendTextMessage: sendTextMessage,
   sendGenericMessage: sendGenericMessage
-}
+};

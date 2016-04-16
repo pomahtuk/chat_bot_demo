@@ -2,9 +2,15 @@
   "name": "izi_bot",
   "version": "1.0.0",
   "description": "Sample server for bot",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pomahtuk/chat_bot_demo.git"
+  },
+  "engines": {
+    "node": ">=5.x"
+  },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha --recursive --harmony_default_parameters",
+    "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha --recursive --harmony_default_parameters",
     "start": "nf start",
     "dev": "nf run nodemon server.js"
   },
@@ -17,9 +23,11 @@
   "dependencies": {
     "body-parser": "^1.15.0",
     "chai": "^3.5.0",
+    "co": "^4.6.0",
     "express": "^4.13.4",
     "foreman": "1.4.1",
     "mocha": "^2.4.5",
+    "mongoose": "^4.4.12",
     "newrelic": "^1.26.2",
     "node-wit": "^3.0.0",
     "request": "^2.71.0",
