@@ -7,9 +7,9 @@ function fbBotSay (sessionId, msg, cb) {
   // Our bot has something to say!
   // Let's retrieve the Facebook user whose session belongs to
   const userSession = fbSessions.findOrCreateSession(sessionId)
-  const recipientId = userSession.sesionParams.senderId
+  const recipientId = userSession.getSenderId()
 
-  console.log(userSession.sesionParams)
+  console.log(userSession.getSenderId())
 
   if (recipientId) {
     // Yay, we found our recipient!

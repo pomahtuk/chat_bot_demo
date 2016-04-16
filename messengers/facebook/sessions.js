@@ -10,6 +10,10 @@ class Session {
     this.sesionParams = sesionParams
   }
 
+  getSenderId() {
+    return this.sesionParams && this.sesionParams.senderId || null
+  }
+
   getContext() {
     return this.sesionParams && this.sesionParams.context || null
   }
@@ -22,7 +26,7 @@ class Session {
 
 function findOrCreateSession (sessionId) {
   // Let's see if we already have a session for the user fbid
-  let hasThisSessionObject = Object.keys(sessions).indexOf(sessionId) > 0
+  let hasThisSessionObject = sessions[sessionId]
 
   if (!hasThisSessionObject) {
     // No session found for sessionId, let's create a new one
