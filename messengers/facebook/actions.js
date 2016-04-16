@@ -20,6 +20,7 @@ function sendMessage (senderId, msg, cb) {
         console.log('Oops! An error occurred while forwarding the response', err);
       }
       // Let's give the wheel back to our bot
+      console.log('message are calling callback function');
       cb();
     });
   } else {
@@ -28,6 +29,8 @@ function sendMessage (senderId, msg, cb) {
     cb();
   }
 }
+
+
 
 function fbBotSay (sessionId, context, msg, cb) {
 
@@ -66,6 +69,5 @@ function fbBotError (sessionId, context, msg)  {
 module.exports = {
   say: fbBotSay,
   cleanupSessionContext: fbBotCleanup,
-  error: fbBotError,
-  saveSessionData: saveSessionData
+  error: fbBotError
 };

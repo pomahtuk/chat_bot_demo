@@ -52,11 +52,9 @@ function mainSessionCallback (sessionData, messaging) {
         } else {
           // Our bot did everything it has to do.
           // Now it's waiting for further messages to proceed.
-          console.log('Waiting for futher messages.', context);
-          fbActions.saveSessionData(sessionId, context, function () {});
+          console.log('Waiting for futher messages. Current story is over.', context);
         }
-      },
-      10
+      }
     );
   }
 }
