@@ -13,7 +13,7 @@ const fbReq = request.defaults({
 });
 
 const sendMessage = (recipientId, msg, cb) => {
-  console.log(`fbMessages about to send this: ${msg} to ${recipientId}`);
+  console.log(`fbMessages about to send this: ${msg.text} to ${recipientId}`);
 
   const opts = {
     form: {
@@ -31,9 +31,6 @@ const sendMessage = (recipientId, msg, cb) => {
 };
 
 function sendTextMessage (sender, text) {
-
-  console.log('text message outhoing', text, sender);
-
   sendMessage(sender, {
     text: text
   }, null);
