@@ -49,7 +49,7 @@ const findOrCreateSessionBySenderId = (senderId) => {
   if (!sessionId) {
     // No session found for user fbid, let's create a new one
     let newSession = new Session(null, {
-      fbid: senderId,
+      senderId: senderId,
       context: {}
     })
 
