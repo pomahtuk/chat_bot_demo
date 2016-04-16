@@ -46,13 +46,13 @@ function mainSessionCallback (sessionData, messaging) {
       sessionId, // the user's current session
       msg, // the user's message 
       sessionContext, // the user's current session state
-      (error, context) => {
+      (error) => {
         if (error) {
           console.log('Oops! Got an error from Wit:', error);
         } else {
           // Our bot did everything it has to do.
           // Now it's waiting for further messages to proceed.
-          console.log('Waiting for futher messages. Current story is over.', context);
+          console.log('Waiting for futher messages. Current story is over.');
         }
       }
     );
