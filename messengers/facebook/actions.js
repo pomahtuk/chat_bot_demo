@@ -16,19 +16,15 @@ function sendMessage (senderId, msg, botCallback) {
     // Yay, we found our recipient!
     // Let's forward our bot response.
     fbMessages.sendTextMessage(senderId, msg, function (err) {
-      console.log('callback for message been called');
       if (err) {
         console.log('Oops! An error occurred while forwarding the response', err);
       }
-      // Let's give the wheel back to our bot
-      console.log('[debug] message are calling callback function');
-      botCallback();
     });
   } else {
     console.log('Oops! Couldnt find user for session');
     // Giving the wheel back to our bot
-    botCallback();
   }
+  botCallback();
 }
 
 
