@@ -20,11 +20,7 @@ const lastEntityValue = (entities, entity) => {
 };
 
 function saveSessionData (sessionId, context, cb) {
-  Session.findAndModify({
-    query: { _id: sessionId },
-    update: { context: context },
-    new: true
-  }).then(function (sessionData) {
+  Session.findByIdAndUpdate(sessionId, { context: context }).then(function (sessionData) {
     console.log('session data saved', sessionData);
     cb(context);
   }, function (err) {
