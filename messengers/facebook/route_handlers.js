@@ -56,6 +56,7 @@ function mainSessionCallback (sessionData, messaging) {
           sessionData.context = context;
           sessionData.save().then(function () {
             // do nothing?
+            console.log('saved new session data?', context, sessionData);
           }, function (err) {
             console.log('Error saving new session data', err);
           });

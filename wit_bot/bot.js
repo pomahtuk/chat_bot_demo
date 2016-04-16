@@ -36,8 +36,6 @@ const actions = {
       context.intent = intent;
     }
 
-    console.log('merge action result about to be sent');
-
     cb(context);
   },
 
@@ -67,13 +65,13 @@ const actions = {
     delete context.location;
     delete context.response;
 
-    cb();
+    cb(context);
   }
 };
  
 const makeClient = function (token, specificActions) {
-  return new Wit(token, Object.assign(actions, specificActions))
-} 
+  return new Wit(token, Object.assign(actions, specificActions));
+};
 
-module.exports = makeClient
+module.exports = makeClient;
 
