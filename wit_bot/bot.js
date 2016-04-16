@@ -20,7 +20,7 @@ const lastEntityValue = (entities, entity) => {
 };
 
 function saveSessionData (sessionId, context, cb) {
-  Session.findByIdAndUpdate(sessionId, { context: context }).then(function (sessionData) {
+  Session.findByIdAndUpdate(sessionId, { context: context }, { new: true }).then(function (sessionData) {
     console.log('session data saved by bot', sessionData);
     cb(context);
   }, function (err) {
@@ -31,6 +31,7 @@ function saveSessionData (sessionId, context, cb) {
 
 const actions = {
   say: (sessionId, msg, cb) => {
+    console.log('bot will say this using default handler! ==', msg);
     cb();
   },
 

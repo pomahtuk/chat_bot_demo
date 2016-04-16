@@ -4,7 +4,7 @@ const fbMessages = require('./messages.js');
 const Session = require('../../models/session.js');
 
 function saveSessionData (sessionId, context, cb) {
-  Session.findByIdAndUpdate(sessionId, { context: context }).then(function (sessionData) {
+  Session.findByIdAndUpdate(sessionId, { context: context }, { new: true }).then(function (sessionData) {
     console.log('session data saved from FB say function: ', sessionData);
     cb(context);
   }, function (err) {
