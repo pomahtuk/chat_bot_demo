@@ -13,7 +13,7 @@ const fbReq = request.defaults({
 });
 
 const sendMessage = (recipientId, msg, cb) => {
-  console.log(`fbMessages, about to send this: ${msg} to ${recipientId}`)
+  console.log(`fbMessages about to send this: ${msg} to ${recipientId}`);
 
   const opts = {
     form: {
