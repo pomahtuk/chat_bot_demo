@@ -5,7 +5,7 @@ const Session = require('../../models/session.js');
 
 function saveSessionData (sessionId, context, cb) {
   Session.findByIdAndUpdate(sessionId, { context: context }).then(function (sessionData) {
-    console.log('session data saved', sessionData);
+    console.log('session data saved from FB say function: ', sessionData);
     cb(context);
   }, function (err) {
     console.log('Error fetching user session, fail', err);
@@ -32,6 +32,8 @@ function sendMessage (senderId, msg, cb) {
 }
 
 function fbBotSay (sessionId, context, msg, cb) {
+
+  console.log(`bot about to say ${msg}`);
 
   saveSessionData(sessionId, context, function () {});
 

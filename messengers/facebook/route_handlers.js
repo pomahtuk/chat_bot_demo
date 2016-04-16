@@ -52,8 +52,7 @@ function mainSessionCallback (sessionData, messaging) {
         } else {
           // Our bot did everything it has to do.
           // Now it's waiting for further messages to proceed.
-          console.log('Waiting for futher messages.', context, sessionData);
-          // Updating the user's current session state
+          console.log('Waiting for futher messages.', context);
         }
       }
     );

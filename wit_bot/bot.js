@@ -21,7 +21,7 @@ const lastEntityValue = (entities, entity) => {
 
 function saveSessionData (sessionId, context, cb) {
   Session.findByIdAndUpdate(sessionId, { context: context }).then(function (sessionData) {
-    console.log('session data saved', sessionData);
+    console.log('session data saved by bot', sessionData);
     cb(context);
   }, function (err) {
     console.log('Error fetching user session, fail', err);
