@@ -42,29 +42,38 @@ function mainSessionCallback (sessionData, messaging) {
     const sessionId = String(sessionData._id);
     let sessionContext = sessionData.context || {};
 
-    FB_WIT.runActions(
-      sessionId, // the user's current session
-      msg, // the user's message 
-      sessionContext, // the user's current session state
-      (error, context) => {
-        if (error) {
-          console.log('Oops! Got an error from Wit:', error);
-        } else {
-          // Our bot did everything it has to do.
-          // Now it's waiting for further messages to proceed.
-          console.log('Waiting for futher messages.', context, sessionData);
-          // Updating the user's current session state
-          // FIXME!!! never gets called
-          sessionData.context = context;
-          sessionData.save().then(function () {
-            // do nothing?
-            console.log('saved new session data?', context, sessionData);
-          }, function (err) {
-            console.log('Error saving new session data', err);
-          });
-        }
+    FB_WIT.converse(sessionId, msg, sessionContext, (error, data) => {
+      if (error) {
+        console.log('Oops! Got an error: ' + error);
+      } else {
+        console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
       }
-    );
+    });
+
+
+    // FB_WIT.runActions(
+    //   sessionId, // the user's current session
+    //   msg, // the user's message 
+    //   sessionContext, // the user's current session state
+    //   (error, context) => {
+    //     if (error) {
+    //       console.log('Oops! Got an error from Wit:', error);
+    //     } else {
+    //       // Our bot did everything it has to do.
+    //       // Now it's waiting for further messages to proceed.
+    //       console.log('Waiting for futher messages.', context, sessionData);
+    //       // Updating the user's current session state
+    //       // FIXME!!! never gets called
+    //       sessionData.context = context;
+    //       sessionData.save().then(function () {
+    //         // do nothing?
+    //         console.log('saved new session data?');
+    //       }, function (err) {
+    //         console.log('Error saving new session data', err);
+    //       });
+    //     }
+    //   }
+    // );
   }
 }
 
