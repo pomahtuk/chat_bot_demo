@@ -24,6 +24,9 @@ function sendMessage (senderId, msg, cb) {
 function fbBotSay (sessionId, msg, cb) {
   // Our bot has something to say!
   // Let's retrieve the Facebook user whose session belongs to
+  
+  console.log('bot about to say "', msg, '" to user with sessionId=', sessionId);
+
   Session.findOne({ _id: sessionId }).then(function (sessionData) {
     if (sessionData) {
       sendMessage(sessionData.senderId, msg, cb);
