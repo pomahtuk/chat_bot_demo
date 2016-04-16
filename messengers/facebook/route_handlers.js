@@ -55,7 +55,8 @@ function mainSessionCallback (sessionData, messaging) {
           console.log('Waiting for futher messages.', context);
           fbActions.saveSessionData(sessionId, context, function () {});
         }
-      }
+      },
+      10
     );
   }
 }
