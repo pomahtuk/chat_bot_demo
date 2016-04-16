@@ -4,11 +4,9 @@ const fbMessages = require('./messages.js');
 const Session = require('../../models/session.js');
 
 function saveSessionData (sessionId, context, cb) {
-  Session.findByIdAndUpdate(sessionId, { context: context }, { new: true }).then(function (sessionData) {
-    console.log('session data saved from FB say function: ', sessionData);
+  Session.findByIdAndUpdate(sessionId, { context: context }, { new: true }).then(function () {
     cb(context);
-  }, function (err) {
-    console.log('Error fetching user session, fail', err);
+  }, function () {
     cb(context);
   });
 }
@@ -53,6 +51,20 @@ function fbBotSay (sessionId, context, msg, cb) {
   });
 }
 
+function fbBotCleanup (sessionId, context, cb) {
+  delete context.intent;
+  delete context.location;
+  delete context.response;
+
+  saveSessionData (sessionId, context, cb);
+}
+
+function fbBotError (sessionId, context, msg)  {
+  console.log('Oops, I don\'t know what to do.', msg);
+}
+
 module.exports = {
-  say: fbBotSay
+  say: fbBotSay,
+  cleanupSessionContext: fbBotCleanup,
+  error: fbBotError
 };
