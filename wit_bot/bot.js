@@ -24,8 +24,6 @@ const actions = {
   },
 
   merge: (context, entities, cb) => {
-    delete context.response;
-
     const location = lastEntityValue(entities, 'location');
     const intent = lastEntityValue(entities, 'intent');
 
@@ -37,6 +35,8 @@ const actions = {
     if (intent) {
       context.intent = intent;
     }
+
+    console.log('merge action result about to be sent');
 
     cb(context);
   },

@@ -31,13 +31,11 @@ function mainSessionCallback (sessionData, messaging) {
   const atts = messaging.message.attachments;
 
   if (atts) {
-    console.log('got mesage with attachment', atts);
+    // console.log('got mesage with attachment', atts);
     // We received an attachment
     // Let's reply with an automatic message
     fbMessages.sendTextMessage(sessionData.senderId, 'Sorry I can only process text messages for now.');
   } else if (msg) {
-    console.log('Received from user:', msg);
-
     // We received a text message
     // Let's forward the message to the Wit.ai Bot Engine
     // This will run all actions until our bot has nothing left to do
