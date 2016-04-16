@@ -47,9 +47,6 @@ function mainSessionCallback (sessionData, messaging) {
       msg, // the user's message 
       sessionContext, // the user's current session state
       (error, context) => {
-        
-        console.log('when the fuck this function gets called?');
-
         if (error) {
           console.log('Oops! Got an error from Wit:', error);
         } else {
@@ -57,14 +54,6 @@ function mainSessionCallback (sessionData, messaging) {
           // Now it's waiting for further messages to proceed.
           console.log('Waiting for futher messages.', context, sessionData);
           // Updating the user's current session state
-          // FIXME!!! never gets called
-          sessionData.context = context;
-          sessionData.save().then(function () {
-            // do nothing?
-            console.log('saved new session data?');
-          }, function (err) {
-            console.log('Error saving new session data', err);
-          });
         }
       }
     );

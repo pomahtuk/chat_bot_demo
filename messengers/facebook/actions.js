@@ -3,6 +3,20 @@
 const fbMessages = require('./messages.js');
 const Session = require('../../models/session.js');
 
+function saveSessionData (sessionId, context, cb) {
+  Session.findAndModify({
+    query: { _id: sessionId },
+    update: { context: context },
+    new: true
+  }).then(function (sessionData) {
+    console.log('session data saved', sessionData);
+    cb(context);
+  }, function (err) {
+    console.log('Error fetching user session, fail', err);
+    cb(context);
+  });
+}
+
 function sendMessage (senderId, msg, cb) {
   if (senderId) {
     // Yay, we found our recipient!
@@ -21,7 +35,10 @@ function sendMessage (senderId, msg, cb) {
   }
 }
 
-function fbBotSay (sessionId, msg, cb) {
+function fbBotSay (sessionId, context, msg, cb) {
+
+  saveSessionData(sessionId, context, function () {});
+
   // Our bot has something to say!
   // Let's retrieve the Facebook user whose session belongs to
   Session.findOne({ _id: sessionId }).then(function (sessionData) {

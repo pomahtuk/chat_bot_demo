@@ -1,6 +1,7 @@
-'use strict'
+'use strict';
 
 const Wit = require('node-wit').Wit;
+const Session = require('../models/session.js');
 
 const lastEntityValue = (entities, entity) => {
   let entityVal = entities && entities[entity];
@@ -18,12 +19,26 @@ const lastEntityValue = (entities, entity) => {
   return null;
 };
 
+function saveSessionData (sessionId, context, cb) {
+  Session.findAndModify({
+    query: { _id: sessionId },
+    update: { context: context },
+    new: true
+  }).then(function (sessionData) {
+    console.log('session data saved', sessionData);
+    cb(context);
+  }, function (err) {
+    console.log('Error fetching user session, fail', err);
+    cb(context);
+  });
+}
+
 const actions = {
   say: (sessionId, msg, cb) => {
     cb();
   },
 
-  merge: (context, entities, cb) => {
+  merge: (sessionId, context, entities, message, cb) => {
     const location = lastEntityValue(entities, 'location');
     const intent = lastEntityValue(entities, 'intent');
 
@@ -36,15 +51,16 @@ const actions = {
       context.intent = intent;
     }
 
-    cb(context);
+    saveSessionData(sessionId, context, cb);
+
+    // cb(context);
   },
 
-  error: (sessionId, msg) => {
+  error: (sessionId, context, msg) => {
     console.log('Oops, I don\'t know what to do.', msg);
   },
 
-  fetchObjectsByLocation: (context, cb) => {
-    // console.log('debug object fetcher', context.intent)
+  fetchObjectsByLocation: (sessionId, context, cb) => {
     // Here should go the api call, e.g.:
     // context.forecast = apiCall(context.location)
     switch (context.intent) {
@@ -57,15 +73,17 @@ const actions = {
     default:
       console.log('nope');
     }
-    cb(context);
+
+    saveSessionData(sessionId, context, cb);
+    // cb(context);
   },
   
-  cleanupSessionContext: (context, cb) => {
+  cleanupSessionContext: (sessionId, context, cb) => {
     delete context.intent;
     delete context.location;
     delete context.response;
 
-    cb(context);
+    saveSessionData(sessionId, context, cb);
   }
 };
  
