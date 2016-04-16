@@ -40,11 +40,12 @@ function mainSessionCallback (sessionData, messaging) {
     // Let's forward the message to the Wit.ai Bot Engine
     // This will run all actions until our bot has nothing left to do
     const sessionId = String(sessionData._id);
+    let sessionContext = sessionData.context || {};
 
     FB_WIT.runActions(
       sessionId, // the user's current session
       msg, // the user's message 
-      sessionData, // the user's current session state
+      sessionContext, // the user's current session state
       (error, context) => {
         if (error) {
           console.log('Oops! Got an error from Wit:', error);
