@@ -9,6 +9,8 @@ function fbBotSay (sessionId, msg, cb) {
   const userSession = fbSessions.findOrCreateSession(sessionId)
   const recipientId = userSession.sesionParams.senderId
 
+  console.log(userSession)
+
   if (recipientId) {
     // Yay, we found our recipient!
     // Let's forward our bot response.
