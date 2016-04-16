@@ -16,6 +16,7 @@ function sendMessage (senderId, msg, botCallback) {
     // Yay, we found our recipient!
     // Let's forward our bot response.
     fbMessages.sendTextMessage(senderId, msg, function (err) {
+      console.log('callback for message been called');
       if (err) {
         console.log('Oops! An error occurred while forwarding the response', err);
       }

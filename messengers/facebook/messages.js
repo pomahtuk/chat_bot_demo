@@ -26,7 +26,7 @@ const sendMessage = (recipientId, msg, messageCallback) => {
   fbReq(opts, (err, resp, data) => {
     console.log('we sent request and about to execute callback');
     if (messageCallback) {
-      messageCallback(err || data.error && data.error.message, data);
+      messageCallback(err, resp, data);
     }
   });
 };
