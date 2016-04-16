@@ -66,5 +66,6 @@ function fbBotError (sessionId, context, msg)  {
 module.exports = {
   say: fbBotSay,
   cleanupSessionContext: fbBotCleanup,
-  error: fbBotError
+  error: fbBotError,
+  saveSessionData: saveSessionData
 };
