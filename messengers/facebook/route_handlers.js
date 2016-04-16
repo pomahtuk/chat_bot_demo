@@ -74,15 +74,14 @@ function mainRoute (req, res) {
 
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
-    Session.findOne({ senderId: sender }).then(function (sessionData) {
-      if (!sessionData) {
+    Session.findOne({ senderId: String(sender) }).then(function (sessionData) {
+      if (sessionData) {
         mainSessionCallback(sessionData, messaging);
       } else {
         // create new session
         // and fire a callback
         let newSession = new Session({ senderId: sender });
         newSession.save().then(function (sessionData) {
-          // console.log('Created new session', sessionData);
           mainSessionCallback(sessionData, messaging);
         }, function (err) {
           console.log('Error creating new session', err);
@@ -92,6 +91,7 @@ function mainRoute (req, res) {
       console.log('Oops! Couldn\'t get session data', err);
     });
   }
+
   res.sendStatus(200);
 }
 

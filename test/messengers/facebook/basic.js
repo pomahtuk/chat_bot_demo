@@ -57,6 +57,11 @@ describe('Facebook messenger routes', function () {
     it('responds with 200 for valid request', function (done) {
       agent.post('/webhook').send(validMessageParams).expect(200, done);
     });
+
+    it('responds with 200 for valid request with images', function (done) {
+      validMessageParams.entry[0].messaging[0].message.attachments = [{}];
+      agent.post('/webhook').send(validMessageParams).expect(200, done);
+    });
   });
 
 });

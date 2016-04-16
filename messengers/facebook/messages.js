@@ -36,7 +36,7 @@ function sendTextMessage (sender, text) {
 
   sendMessage(sender, {
     text: text
-  });
+  }, null);
 }
 
 function sendGenericMessage (sender) {
