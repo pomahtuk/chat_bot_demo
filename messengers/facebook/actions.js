@@ -11,22 +11,22 @@ function saveSessionData (sessionId, context, cb) {
   });
 }
 
-function sendMessage (senderId, msg, cb) {
+function sendMessage (senderId, msg, botCallback) {
   if (senderId) {
     // Yay, we found our recipient!
     // Let's forward our bot response.
-    fbMessages.sendTextMessage(senderId, msg, (err) => {
+    fbMessages.sendTextMessage(senderId, msg, function (err) {
       if (err) {
         console.log('Oops! An error occurred while forwarding the response', err);
       }
       // Let's give the wheel back to our bot
-      console.log('message are calling callback function');
-      cb();
+      console.log('[debug] message are calling callback function');
+      botCallback();
     });
   } else {
     console.log('Oops! Couldnt find user for session');
     // Giving the wheel back to our bot
-    cb();
+    botCallback();
   }
 }
 
