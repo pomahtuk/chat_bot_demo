@@ -30,6 +30,7 @@
     "mongoose": "^4.4.12",
     "newrelic": "^1.26.2",
     "node-wit": "^3.2.0",
+    "pmx": "^0.6.1",
     "request": "^2.71.0",
     "response-time": "^2.3.1"
   },

@@ -2,6 +2,14 @@
 
 require('newrelic');
 
+require('pmx').init({
+  http : true,
+  errors        : true, // Exceptions loggin (default: true)
+  custom_probes : true, // Auto expose JS Loop Latency and HTTP req/s as custom metrics
+  network       : true, // Network monitoring at the application level
+  ports         : true  // Shows which ports your app is listening on (default: false)
+});
+
 const express = require('express'),
   bodyParser = require('body-parser'),
   mongoose   = require('mongoose'),
@@ -13,6 +21,8 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
+
+console.log(envConfig);
 
 // Messenger API parameters
 const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID) || process.env.FACEBOOK_PAGE_ID && Number(process.env.FACEBOOK_PAGE_ID);
