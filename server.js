@@ -5,7 +5,8 @@ require('newrelic');
 const express = require('express'),
   bodyParser = require('body-parser'),
   mongoose   = require('mongoose'),
-  fbRouter = require('./messengers/facebook');
+  fbRouter = require('./messengers/facebook'),
+  envConfig = require('./env.json');
 
 const app = express();
 // parse application/x-www-form-urlencoded
@@ -14,12 +15,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Messenger API parameters
-const FB_PAGE_ID = process.env.FACEBOOK_PAGE_ID && Number(process.env.FACEBOOK_PAGE_ID);
+const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID) || process.env.FACEBOOK_PAGE_ID && Number(process.env.FACEBOOK_PAGE_ID);
 if (!FB_PAGE_ID) {
   throw new Error('missing FB_PAGE_ID');
 }
 
-const FB_PAGE_TOKEN = process.env.FACEBOOK_TOKEN;
+const FB_PAGE_TOKEN = envConfig.FACEBOOK_TOKEN || process.env.FACEBOOK_TOKEN;
 if (!FB_PAGE_TOKEN) {
   throw new Error('missing FACEBOOK_TOKEN');
 }

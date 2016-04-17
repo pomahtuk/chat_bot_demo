@@ -5,13 +5,14 @@ const fbMessages = require('./messages.js');
 const Session = require('../../models/session.js');
 const fbActions = require('./actions.js');
 const makeWitBot = require('../../wit_bot/bot.js');
+const envConfig = require('../../env.json');
 
 // Parameters required for app
-const WIT_TOKEN = process.env.WIT_TOKEN;
-const FB_PAGE_ID = process.env.FACEBOOK_PAGE_ID && Number(process.env.FACEBOOK_PAGE_ID);
+const WIT_TOKEN = envConfig.WIT_TOKEN || process.env.WIT_TOKEN;
+const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID) || process.env.FACEBOOK_PAGE_ID && Number(process.env.FACEBOOK_PAGE_ID);
 const FB_WIT = makeWitBot(WIT_TOKEN, fbActions);
 
-const FB_VERIFY_TOKEN = process.env.FACEBOOK_VERIFY_TOKEN;
+const FB_VERIFY_TOKEN = envConfig.FACEBOOK_VERIFY_TOKEN || process.env.FACEBOOK_VERIFY_TOKEN;
 
 function facebookVerification (req, res) {
   if (!FB_VERIFY_TOKEN) {

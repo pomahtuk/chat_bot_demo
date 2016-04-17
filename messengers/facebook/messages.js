@@ -1,6 +1,7 @@
 'use strict';
 
 const request = require('request');
+const envConfig = require('../../env.json');
 
 // See the Send API reference
 // https://developers.facebook.com/docs/messenger-platform/send-api-reference
@@ -8,7 +9,7 @@ const fbReq = request.defaults({
   uri: 'https://graph.facebook.com/me/messages',
   method: 'POST',
   json: true,
-  qs: { access_token: process.env.FACEBOOK_TOKEN },
+  qs: { access_token: envConfig.FACEBOOK_TOKEN || process.env.FACEBOOK_TOKEN },
   headers: { 'Content-Type': 'application/json' }
 });
 

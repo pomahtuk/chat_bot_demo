@@ -1,0 +1,24 @@
+#!/bin/sh
+#/etc/init.d/nodeup
+
+export PATH=$PATH:/usr/local/bin
+export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
+export PORT='3010'
+
+case "$1" in
+  start)
+  exec pm2 start -n izi-bot -p /var/www/izi-bot.pid -l /var/www/logs/izi-bot.log /var/www/izi-bot/server.js --watch
+  ;;
+stop)
+  exec pm2 stop izi-bot
+  ;;
+restart)
+  exec pm2 reload izi-bot && pm2 restart izi-bot
+  ;;
+*)
+  echo "Usage: /etc/init.d/nodeup {start|stop|restart}"
+  exit 1
+  ;;
+esac
+
+exit 0
