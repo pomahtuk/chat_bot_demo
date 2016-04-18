@@ -1,1 +1,1 @@
-web: node --harmony_default_parameters server.js
+web: node --harmony --harmony_destructuring server.js
