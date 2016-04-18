@@ -96,6 +96,19 @@ const fbMessages = {
 
 describe('Facebook messages validation', function () {
 
+  describe('Positive path', function () {
+    fbMessages.valid.forEach((msg) => {
+      it(`Returns a sucess status to a valid message with template: ${msg.payload.template_type}`, function (done) {
+        let testResult = validationFunction(msg);
+
+        expect(testResult.status).to.be.equal('success');
+        expect(testResult).not.to.have.property('errors');
+
+        done();
+      });
+    });
+  });
+
   describe('Valiidation of message type', function () {
     it('Returns an error if message type is not supported', function (done) {
       let testResult = validationFunction({
@@ -111,17 +124,6 @@ describe('Facebook messages validation', function () {
           .that.is.a('string');
 
       done();
-    });
-
-    fbMessages.valid.forEach((msg) => {
-      it(`Returns a sucess status to a valid message with template: ${msg.payload.template_type}`, function (done) {
-        let testResult = validationFunction(msg);
-
-        expect(testResult.status).to.be.equal('success');
-        expect(testResult).not.to.have.property('errors');
-
-        done();
-      });
     });
 
   });
