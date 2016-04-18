@@ -14,7 +14,7 @@ const fbReq = request.defaults({
 });
 
 const sendMessage = (recipientId, msg, messageCallback) => {
-  console.log(`fbMessages about to send this: "${msg.text}" to ${recipientId}`);
+  console.log(`fbMessages about to message to ${recipientId}`);
 
   const opts = {
     form: {
@@ -24,7 +24,9 @@ const sendMessage = (recipientId, msg, messageCallback) => {
       message: msg
     }
   };
-  fbReq(opts, (err, resp, data) => {
+  fbReq(opts, function (err, resp, data) {
+    // console.log('got fb response:', resp.body);
+
     if (messageCallback) {
       messageCallback(err, resp, data);
     }
@@ -32,9 +34,138 @@ const sendMessage = (recipientId, msg, messageCallback) => {
 };
 
 function sendTextMessage (sender, text) {
+  // TODO: in this case error frome facebook side will be unhandled
   sendMessage(sender, {
     text: text
   }, null);
+}
+
+//
+// Some validation functions
+//
+
+// validate CTA inside message
+function valudateCTAElement (ctaElement) {
+  const ALLOWED_CTA_TITLE_LENGTH = 20;
+
+  let validationErrors = [];
+
+  if (ctaElement.title.length > ALLOWED_CTA_TITLE_LENGTH) {
+    validationErrors.push(`Wrong title length. Must be not more than ${ALLOWED_CTA_TITLE_LENGTH}`);
+  }
+
+  if (validationErrors.length > 0) {
+    return {
+      status: 'failure',
+      errors: validationErrors
+    };
+  }
+
+  return {
+    status: 'success'
+  };
+}
+
+// validate template elements
+function validateTemplateElement (tmplElement) {
+  const ALLOWED_TITLE_LENGTH = 45;
+  const ALLOWED_SUBTITLE_LENGTH = 80;
+  const ALLOWED_CTA_ELEMENTS = 3;
+
+  let validationErrors = [];
+
+  if (tmplElement.title && tmplElement.title.length > ALLOWED_TITLE_LENGTH) {
+    validationErrors.push(`Wrong title length. Must be not more than ${ALLOWED_TITLE_LENGTH}`);
+  }
+
+  if (tmplElement.subtitle && tmplElement.subtitle.length > ALLOWED_SUBTITLE_LENGTH) {
+    validationErrors.push(`Wrong subtitle length. Must be not more than ${ALLOWED_SUBTITLE_LENGTH}`);
+  }
+
+  if (tmplElement.buttons && tmplElement.buttons.length > ALLOWED_CTA_ELEMENTS) {
+    validationErrors.push(`Wrong number of CTAs. Must be not more than ${ALLOWED_CTA_ELEMENTS}`);
+  }
+
+  tmplElement.buttons && tmplElement.buttons && tmplElement.buttons.forEach((ctaElement, index) => {
+    let ctaStatus = valudateCTAElement(ctaElement);
+    if (ctaStatus.status !== 'success') {
+      validationErrors.push(`CTA ${index} has this errors: \n\t ${ctaStatus.errors.join(',\n\t')}.`);
+    }
+  });
+
+  if (validationErrors.length > 0) {
+    return {
+      status: 'failure',
+      errors: validationErrors
+    };
+  }
+
+  return {
+    status: 'success'
+  };
+}
+
+// validate whole message
+function validateTemplateMessage (msgObject) {
+  const ALLOWED_TYPES = ['generic', 'button', 'receipt'];
+  const ALLOWED_ELEMENTS = 10;
+
+  let payload = msgObject.payload;
+  let templateType = payload.template_type;
+  let elements = payload.elements;
+  // let buttons = payload.buttons;
+  let validationErrors = [];
+
+  if (ALLOWED_TYPES.indexOf(templateType) < 0) {
+    validationErrors.push(`Wrong template type. Must be one of those: ${ALLOWED_TYPES.join(', ')}`);
+  }
+
+  if (elements && elements.length > ALLOWED_ELEMENTS) {
+    validationErrors.push(`Wrong number of elements. Must be not more than ${ALLOWED_ELEMENTS}`);
+  }
+
+  elements && elements.forEach((element, index) => {
+    let elementStatus = validateTemplateElement(element);
+    if (elementStatus.status !== 'success') {
+      validationErrors.push(`Element ${index} has this errors: \n\t ${elementStatus.errors.join(',\n\t')}.`);
+    }
+  });
+
+  // buttons && buttons.forEach((ctaElement, index) => {
+  //   let ctaStatus = valudateCTAElement(ctaElement);
+  //   if (ctaStatus.status !== 'success') {
+  //     validationErrors.push(`CTA ${index} has this errors: \n\t ${ctaStatus.errors.join(',\n\t')}.`);
+  //   }
+  // });
+
+  if (validationErrors.length > 0) {
+    return {
+      status: 'failure',
+      errors: validationErrors
+    };
+  }
+
+  return {
+    status: 'success'
+  };
+}
+
+function sendTemplatedMessage (sender, msgObject) {
+  console.log('going to send templated message');
+
+  let messageValidationResult = validateTemplateMessage(msgObject);
+
+  console.log('validation results', messageValidationResult);
+
+  if (messageValidationResult.status == 'success') {
+    // all ok, we are good to go
+    // TODO: handle facebook errors
+    sendMessage(sender, {
+      attachment: msgObject
+    }, null);
+  } else {
+    console.log('Error validating message', messageValidationResult.errors);
+  }
 }
 
 function sendGenericMessage (sender) {
@@ -73,5 +204,6 @@ function sendGenericMessage (sender) {
 
 module.exports = {
   sendTextMessage: sendTextMessage,
-  sendGenericMessage: sendGenericMessage
+  sendGenericMessage: sendGenericMessage,
+  sendTemplatedMessage: sendTemplatedMessage
 };

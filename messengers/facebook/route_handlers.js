@@ -3,15 +3,11 @@
 const fbUtils = require('./utils.js');
 const fbMessages = require('./messages.js');
 const Session = require('../../models/session.js');
-const fbActions = require('./actions.js');
-const makeWitBot = require('../../wit_bot/bot.js');
+const fbWit = require('./bot.js');
 const envConfig = require('../../env.json');
 
 // Parameters required for app
-const WIT_TOKEN = envConfig.WIT_TOKEN;
 const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID);
-const FB_WIT = makeWitBot(WIT_TOKEN, fbActions);
-
 const FB_VERIFY_TOKEN = envConfig.FACEBOOK_VERIFY_TOKEN;
 
 function facebookVerification (req, res) {
@@ -27,36 +23,22 @@ function facebookVerification (req, res) {
 }
 
 function mainSessionCallback (sessionData, messaging) {
-  // We retrieve the message content
-  const msg = messaging.message.text;
-  const atts = messaging.message.attachments;
+  let processedMessaging = fbUtils.prepareBotMessage(messaging);
 
-  if (atts) {
-    // console.log('got mesage with attachment', atts);
-    // We received an attachment
-    // Let's reply with an automatic message
-    fbMessages.sendTextMessage(sessionData.senderId, 'Sorry I can only process text messages for now.');
-  } else if (msg) {
-    // We received a text message
-    // Let's forward the message to the Wit.ai Bot Engine
-    // This will run all actions until our bot has nothing left to do
-    const sessionId = String(sessionData._id);
-    let sessionContext = sessionData.context || {};
+  console.log('processed message', processedMessaging);
 
-    FB_WIT.runActions(
-      sessionId, // the user's current session
-      msg, // the user's message 
-      sessionContext, // the user's current session state
-      (error) => {
-        if (error) {
-          console.log('Oops! Got an error from Wit:', error);
-        } else {
-          // Our bot did everything it has to do.
-          // Now it's waiting for further messages to proceed.
-          console.log('Waiting for futher messages. Current story is over.');
-        }
+  switch (processedMessaging.recepient) {
+    case 'sender':
+      switch (processedMessaging.type) {
+        case 'templated':
+          fbMessages.sendTemplatedMessage(sessionData.senderId, processedMessaging.templatedMsg, processedMessaging.msg);
+          break;
+        default:
+          fbMessages.sendTextMessage(sessionData.senderId, processedMessaging.msg);
       }
-    );
+      break;
+    default:
+      fbWit.runFbActions(sessionData, processedMessaging.msg);
   }
 }
 
