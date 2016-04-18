@@ -25,8 +25,6 @@ function facebookVerification (req, res) {
 function mainSessionCallback (sessionData, messaging) {
   let processedMessaging = fbUtils.prepareBotMessage(messaging);
 
-  console.log('processed message', processedMessaging);
-
   switch (processedMessaging.recepient) {
     case 'sender':
       switch (processedMessaging.type) {

@@ -14,8 +14,6 @@ const fbReq = request.defaults({
 });
 
 const sendMessage = (recipientId, msg, messageCallback) => {
-  console.log(`fbMessages about to message to ${recipientId}`);
-
   const opts = {
     form: {
       recipient: {
@@ -113,7 +111,7 @@ function validateTemplateMessage (msgObject) {
   let payload = msgObject.payload;
   let templateType = payload.template_type;
   let elements = payload.elements;
-  // let buttons = payload.buttons;
+  let buttons = payload.buttons;
   let validationErrors = [];
 
   if (ALLOWED_TYPES.indexOf(templateType) < 0) {
@@ -131,12 +129,12 @@ function validateTemplateMessage (msgObject) {
     }
   });
 
-  // buttons && buttons.forEach((ctaElement, index) => {
-  //   let ctaStatus = valudateCTAElement(ctaElement);
-  //   if (ctaStatus.status !== 'success') {
-  //     validationErrors.push(`CTA ${index} has this errors: \n\t ${ctaStatus.errors.join(',\n\t')}.`);
-  //   }
-  // });
+  buttons && buttons.forEach((ctaElement, index) => {
+    let ctaStatus = valudateCTAElement(ctaElement);
+    if (ctaStatus.status !== 'success') {
+      validationErrors.push(`CTA ${index} has this errors: \n\t ${ctaStatus.errors.join(',\n\t')}.`);
+    }
+  });
 
   if (validationErrors.length > 0) {
     return {
@@ -151,11 +149,7 @@ function validateTemplateMessage (msgObject) {
 }
 
 function sendTemplatedMessage (sender, msgObject) {
-  console.log('going to send templated message');
-
   let messageValidationResult = validateTemplateMessage(msgObject);
-
-  console.log('validation results', messageValidationResult);
 
   if (messageValidationResult.status == 'success') {
     // all ok, we are good to go
@@ -168,42 +162,8 @@ function sendTemplatedMessage (sender, msgObject) {
   }
 }
 
-function sendGenericMessage (sender) {
-  sendMessage(sender, {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'generic',
-        elements: [{
-          title: 'First card',
-          subtitle: 'Element #1 of an hscroll',
-          image_url: 'http://messengerdemo.parseapp.com/img/rift.png',
-          buttons: [{
-            type: 'web_url',
-            url: 'https://www.messenger.com/',
-            title: 'Web url'
-          }, {
-            type: 'postback',
-            title: 'Postback',
-            payload: 'Payload for first element in a generic bubble'
-          }]
-        }, {
-          title: 'Second card',
-          subtitle: 'Element #2 of an hscroll',
-          image_url: 'http://messengerdemo.parseapp.com/img/gearvr.png',
-          buttons: [{
-            type: 'postback',
-            title: 'Postback',
-            payload: 'Payload for second element in a generic bubble'
-          }]
-        }]
-      }
-    }
-  });
-}
-
 module.exports = {
   sendTextMessage: sendTextMessage,
-  sendGenericMessage: sendGenericMessage,
-  sendTemplatedMessage: sendTemplatedMessage
+  sendTemplatedMessage: sendTemplatedMessage,
+  validateTemplateMessage: validateTemplateMessage
 };
