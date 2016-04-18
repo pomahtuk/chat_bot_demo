@@ -9,7 +9,7 @@ const fbReq = request.defaults({
   uri: 'https://graph.facebook.com/me/messages',
   method: 'POST',
   json: true,
-  qs: { access_token: envConfig.FACEBOOK_TOKEN || process.env.FACEBOOK_TOKEN },
+  qs: { access_token: envConfig.FACEBOOK_TOKEN },
   headers: { 'Content-Type': 'application/json' }
 });
 

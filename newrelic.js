@@ -4,6 +4,9 @@
  * See lib/config.defaults.js in the agent distribution for a more complete
  * description of configuration variables and their potential values.
  */
+
+const envConfig = require('./env.json');
+
 exports.config = {
   /**
    * Array of application names.
@@ -12,7 +15,7 @@ exports.config = {
   /**
    * Your New Relic license key.
    */
-  license_key: process.env.NEWRELIC_KEY,
+  license_key: envConfig.NEWRELIC_KEY,
   logging: {
     /**
      * Level at which to log. 'trace' is most useful to New Relic when diagnosing

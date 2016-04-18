@@ -9,11 +9,11 @@ const agent = request.agent(app);
 
 const validSubscribeParams = {
   'hub.mode': 'subscribe',
-  'hub.verify_token': envConfig.FACEBOOK_VERIFY_TOKEN || process.env.FACEBOOK_VERIFY_TOKEN,
+  'hub.verify_token': envConfig.FACEBOOK_VERIFY_TOKEN,
   'hub.challenge': 'horay'
 };
 
-const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID) || process.env.FACEBOOK_PAGE_ID && Number(process.env.FACEBOOK_PAGE_ID);
+const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID);
 
 const validMessageParams = {
   'object': 'page',

@@ -23,12 +23,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Messenger API parameters
-const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID) || process.env.FACEBOOK_PAGE_ID && Number(process.env.FACEBOOK_PAGE_ID);
+const FB_PAGE_ID = envConfig.FACEBOOK_PAGE_ID && Number(envConfig.FACEBOOK_PAGE_ID);
 if (!FB_PAGE_ID) {
   throw new Error('missing FB_PAGE_ID');
 }
 
-const FB_PAGE_TOKEN = envConfig.FACEBOOK_TOKEN || process.env.FACEBOOK_TOKEN;
+const FB_PAGE_TOKEN = envConfig.FACEBOOK_TOKEN;
 if (!FB_PAGE_TOKEN) {
   throw new Error('missing FACEBOOK_TOKEN');
 }
@@ -42,7 +42,7 @@ function connect () {
   return mongoose.connect('mongodb://localhost/bot', options).connection;
 }
 
-const PORT = Number(process.env.PORT) || 3010;
+const PORT = Number(envConfig.PORT) || 3010;
 
 connect()
   .on('error', console.log)

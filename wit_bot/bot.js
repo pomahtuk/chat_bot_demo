@@ -1,7 +1,6 @@
 'use strict';
 
 const Wit = require('node-wit').Wit;
-const Session = require('../models/session.js');
 
 const lastEntityValue = (entities, entity) => {
   let entityVal = entities && entities[entity];
