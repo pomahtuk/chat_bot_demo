@@ -1,15 +1,18 @@
 'use strict';
 
 const request = require('request');
-const envConfig = require('../../env.json');  
 
-class googleGeocoder {
-  constructor () {
+class GoogleGeocoder {
+  constructor (apiKey) {
+    if (!apiKey) {
+      throw new Error('no API key provided for google geocoder');
+    }
+
     this.geoCodeRequest = request.defaults({
       uri: 'https://maps.googleapis.com/maps/api/geocode/json',
       method: 'GET',
       json: true,
-      qs: { key: envConfig.GOOGLE_KEY },
+      qs: { key: apiKey },
       headers: { 'Content-Type': 'application/json' }
     });
     
@@ -17,7 +20,7 @@ class googleGeocoder {
       uri: 'https://www.googleapis.com/geolocation/v1/geolocate',
       method: 'GET',
       json: true,
-      qs: { key: envConfig.GOOGLE_KEY },
+      qs: { key: apiKey },
       headers: { 'Content-Type': 'application/json' }
     });
   }
@@ -30,10 +33,10 @@ class googleGeocoder {
         if (err) {
           return reject(err);
         }
-        if (data.error) {
+        if (resp.statusCode !== 200) {
           return reject({
-            status: data.message,
-            code: data.code
+            status: data,
+            code: resp.statusCode
           });
         }
         if (data.status !== 'OK') {
@@ -50,9 +53,9 @@ class googleGeocoder {
     // one fine day this will be available in NodeJS
     // let { status: statusCode , results } = geoResponse;
     const statusCode = geoResponse.status;
-    const results = geoResponse.results;
+    const result = geoResponse.results[0];
     let geolocationResult = null;
-    
+
     switch (statusCode) {
       case 'ZERO_RESULTS':
         // do a call to a geolocation api
@@ -67,7 +70,11 @@ class googleGeocoder {
         });
         break;
       case 'OK':
-        return resolve(results);
+        // do unified formatting
+        return resolve({
+          locationName: result.formatted_address,
+          coordinates: result.geometry.location
+        });
       default:
         return reject({
           status: statusCode
@@ -91,5 +98,5 @@ class googleGeocoder {
   }
 }
 
-module.exports = new googleGeocoder();
+module.exports = GoogleGeocoder;
  

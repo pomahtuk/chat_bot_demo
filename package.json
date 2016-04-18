@@ -11,6 +11,7 @@
   },
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha --recursive --harmony_default_parameters",
+    "coverage": "istanbul cover _mocha -- --recursive -R spec",
     "start": "nf start",
     "dev": "nf run nodemon server.js"
   },
@@ -35,6 +36,7 @@
     "response-time": "^2.3.1"
   },
   "devDependencies": {
+    "istanbul": "^0.4.3",
     "supertest": "^1.2.0"
   }
 }
