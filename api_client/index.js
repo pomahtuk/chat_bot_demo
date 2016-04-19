@@ -1,21 +1,20 @@
 /* jslint browser: true */
-/* global B */
+/* global B, jQuery */
 
 (function (B) {
     'use strict';
-    
+
     if (B.env.b_action !== 'explorer') {
         return;
     }
-   
-    //  Full API documentation:
-    //  https://api-docs.izi.travel/    
 
+    //  Full API documentation:
+    //  https://api-docs.izi.travel/
 
     // before start - delete all '.dev' occurencies, used for testing
     // 'Access-Control-Allow-Origin' error on regular links still present
     B.explorer.define('audioguides-explorer', ['jQuery'], function ($) {
-        
+
         var guides,
             mapInstance,
             max_errors = 5,
@@ -32,7 +31,7 @@
             apiUrl = 'https://api.dev.izi.travel/mtg/objects/search',
             // determine response type
             useCompactForm = true;
-    
+
         /* Building image url:
 
         {MEDIA_BASE_URL}/{CONTENT_PROVIDER_UUID}/{IMAGE_UUID}_{IMAGE_SIZE}.jpg
@@ -54,12 +53,12 @@
         function buildImageUrl (guide) {
             var image = guide.content.images[0],
                 result;
-            
+
             result = mediaBase + '/' + guide.content_provider.uuid + '/' + image.uuid + '_240x180.jpg';
-            
+
             return result;
         }
-        
+
         function buildPathArray (route) {
             var i = 0,
                 pair,
@@ -96,18 +95,18 @@
         function transformResponse (guides) {
             var resultObject, guide,
                 location, route, distance,
-                distanceKM, distanceMI, walkingTime,
+                distanceKM, distanceMI,
                 distanceText, hotelDistanceTemplateText,
                 i = guides.length - 1,
                 currentHotel = mapInstance.data.hotel,
                 // constants
                 mileConstant = 1.609344,
                 // could be adjusted, used for time calculation
-                minutesPerKilometer = 12.5,
+                // minutesPerKilometer = 12.5,
                 result = [];
 
             while (i >= 0) {
-                
+
                 guide = guides[i];
 
                 // checking if response came in full form or compact form
@@ -145,7 +144,7 @@
                 // same for miles, using mile constant
                 distanceMI = Math.ceil((distance / mileConstant) / 100) / 10;
                 // calculating walking time
-                walkingTime = Math.ceil(distanceKM * minutesPerKilometer);
+                // walkingTime = Math.ceil(distanceKM * minutesPerKilometer);
                 // prepare this for tempalte using clienside translations
                 // as ajax came late, rather calculate propper text here
                 distanceText = B.explorer.useMiles ? distanceMI + ' mi' : distanceKM + ' km',
@@ -153,7 +152,7 @@
 
                 // remove!!!!
                 // window.map = mapInstance;
-                
+
                 resultObject = {
                     b_icon_type: 'audioguide',
                     b_id: guide.uuid,
@@ -182,14 +181,14 @@
                 result.push(resultObject);
                 i -= 1;
             }
-            
+
             return result;
         }
-        
+
         function finalizeMarkers () {
             mapInstance.sendMarkersToMap(guides);
         }
-        
+
         function getMarkers () {
 
             if (fetching) {
@@ -278,9 +277,9 @@
                     }
 
                     B.explorer.track('Error', 'AJAX audioguides loading error: ' + error + ' (' + text + ')');
-                    
+
                     errors += 1;
-                    
+
                     // Try re-fetching
                     if (errors >= max_errors) {
                         B.explorer.track('Error', 'AJAX audioguides loading error: max_errors reached (' + max_errors + ')');
@@ -290,16 +289,16 @@
                 }
             });
         }
-      
+
         function init (mapModule) {
             mapInstance = mapModule;
             mapInstance.data.guides = {};
             getMarkers();
         }
-      
+
         return {
             init: init
         };
-      
+
     });
 }(B));
