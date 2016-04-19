@@ -22,7 +22,8 @@ const getCoordinates = (response) => {
     coordinates: {
       lat: response.payload.coordinates.lat,
       lng: response.payload.coordinates.long
-  }
+    }
+  };
 };
 
 const processAttachments = (atts) => {
