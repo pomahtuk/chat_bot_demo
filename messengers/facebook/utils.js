@@ -17,20 +17,53 @@ const getFirstMessagingEntry = (body, FB_PAGE_ID) => {
   return val || null;
 };
 
+const getCoordinates = (response) => {
+  return {
+    coordinates: {
+      lat: response.payload.coordinates.lat,
+      lng: response.payload.coordinates.long
+  }
+};
+
+const processAttachments = (atts) => {
+  const firstAttachment = atts[0];
+  
+  // we are able to process locations only for now
+  if (firstAttachment.type == 'location') {
+    return {
+      // return something to bot
+      msg: `near ${firstAttachment.title}`,
+      // set something for session
+      outOfContext: getCoordinates(firstAttachment)
+    };
+  }
+  
+  return atts;
+};
+
 const prepareBotMessage = (messaging) => {
   // We retrieve the message content
-  const msg = messaging.message.text;
   const atts = messaging.message.attachments;
+  let msg = messaging.message.text;
+  let outOfContext = null;
 
   if (atts) {
     console.log('got mesage with attachment:');
     console.log(JSON.stringify(atts, null, 4));
-    // We received an attachment
-    // Let's reply with an automatic message
-    return {
-      msg: 'Sorry I can only process text messages for now.',
-      recepient: 'sender'
-    };
+    
+    let processedAttachment = processAttachments(atts);
+    
+    if (processedAttachment.msg) {
+      // override user input if any
+      msg = processedAttachment.msg;
+      outOfContext = processedAttachment.outOfContext;
+    } else {
+      return {
+        msg: 'Sorry I can only process text messages or location attachments for now.',
+        recepient: 'sender'
+      }; 
+    }
+
   }
   
   if (msg) {
@@ -140,7 +173,8 @@ const prepareBotMessage = (messaging) => {
 
     return {
       msg,
-      recepient: 'bot'
+      recepient: 'bot',
+      outOfContext
     };
   }
 };

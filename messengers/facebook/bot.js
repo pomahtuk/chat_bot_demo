@@ -64,6 +64,22 @@ const fbActions = {
     delete context.response;
 
     saveSessionData({ sessionId, context, outOfContext: {}, cb });
+  },
+  fetchObjectsByLocation: function (sessionId, context, cb) {
+    // Here should go the api call, e.g.:
+    // context.forecast = apiCall(context.location)
+    switch (context.intent) {
+      case 'tours':
+        context.response = '2 hour tour, 20 POI tour, Super nice tour';
+        break;
+      case 'museums':
+        context.response = 'Super cool museum, other extra cool museum and some shitty one';
+        break;
+      default:
+        console.log('nope');
+    }
+
+    cb(context);
   }
 };
 

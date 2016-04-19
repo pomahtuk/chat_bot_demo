@@ -36,7 +36,17 @@ function mainSessionCallback (sessionData, messaging) {
       }
       break;
     default:
-      fbWit.runFbActions(sessionData, processedMessaging.msg);
+      if (processedMessaging.outOfContext) {
+        // saving all out of context data
+        sessionData.outOfContext = processedMessaging.outOfContext;
+        sessionData.save().then((updatedSessionData) => {
+          fbWit.runFbActions(updatedSessionData, processedMessaging.msg);
+        }, (err) => {
+          console.log('Error updating user session', err);
+        });
+      } else {
+        fbWit.runFbActions(sessionData, processedMessaging.msg); 
+      }
   }
 }
 
