@@ -13,6 +13,7 @@ const Schema = mongoose.Schema;
 const SessionSchema = new Schema({
   senderId: { type: String, default: '', trim: true },
   context: { type: Schema.Types.Mixed, default: {} },
+  outOfContext: { type: Schema.Types.Mixed, default: {} },
   createdAt: { type: Date, default: Date.now }
 });
 

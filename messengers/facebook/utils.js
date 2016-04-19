@@ -23,14 +23,17 @@ const prepareBotMessage = (messaging) => {
   const atts = messaging.message.attachments;
 
   if (atts) {
-    // console.log('got mesage with attachment', atts);
+    console.log('got mesage with attachment:');
+    console.log(JSON.stringify(atts, null, 4));
     // We received an attachment
     // Let's reply with an automatic message
     return {
       msg: 'Sorry I can only process text messages for now.',
       recepient: 'sender'
     };
-  } else if (msg) {
+  }
+  
+  if (msg) {
     // We received a text message
     // Let's forward the message to the Wit.ai Bot Engine
     // This will run all actions until our bot has nothing left to do

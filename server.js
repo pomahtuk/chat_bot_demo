@@ -38,7 +38,7 @@ app.use('/webhook', fbRouter);
 function connect () {
   var options = { server: { socketOptions: { keepAlive: 1 } } };
   mongoose.Promise = global.Promise;
-  mongoose.set('debug', envConfig.NODE_ENV === 'development');
+  mongoose.set('debug', envConfig.NODE_ENV === 'development' && !process.env.NODE_ENV === 'test');
   return mongoose.connect('mongodb://localhost/bot', options).connection;
 }
 

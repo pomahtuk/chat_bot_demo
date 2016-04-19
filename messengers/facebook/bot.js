@@ -8,8 +8,13 @@ const makeWitBot = require('../../wit_bot/bot.js');
 // Parameters required for app
 const WIT_TOKEN = envConfig.WIT_TOKEN;
 
-function saveSessionData (sessionId, context, cb) {
-  Session.findByIdAndUpdate(sessionId, { context: context }, { new: true }).then(function () {
+function saveSessionData (sessionParams) {
+  const sessionId = sessionParams.sessionId,
+    context = sessionParams.context,
+    outOfContext = sessionParams.outOfContext, 
+    cb = sessionParams.cb;
+    
+  Session.findByIdAndUpdate(sessionId, { context, outOfContext }, { new: true }).then(function () {
     cb(context);
   }, function () {
     cb(context);
@@ -36,7 +41,7 @@ const fbActions = {
   say: function (sessionId, context, msg, cb) {
     console.log(`bot about to say ${msg}`);
 
-    saveSessionData(sessionId, context, function () {});
+    saveSessionData({ sessionId, context, outOfContext: {}, cb: function () {} });
 
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
@@ -58,7 +63,7 @@ const fbActions = {
     delete context.location;
     delete context.response;
 
-    saveSessionData (sessionId, context, cb);
+    saveSessionData({ sessionId, context, outOfContext: {}, cb });
   }
 };
 
