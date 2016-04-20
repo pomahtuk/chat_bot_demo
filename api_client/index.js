@@ -58,7 +58,7 @@ class IZIClient {
     */
 
     const MEDIA_BASE = 'https://media.izi.travel';
-    const image = guide.content.images[0];
+    const image = guide.images[0];
 
     return MEDIA_BASE + '/' + guide.content_provider.uuid + '/' + image.uuid + '_240x180.jpg';
   }
@@ -78,34 +78,65 @@ class IZIClient {
     return distance; // returns the distance in meter
   }
 
+  ellipsisOverflow (longString) {
+    const STR_LENGTH = 45;
+
+    if (longString.length > STR_LENGTH) {
+      return longString.slice(0, 42) + '...';
+    } else {
+      return longString;
+    }
+  }
+
   transformResponse (data, resolve, reject) {
     if (data) {
-      return resolve(data);
+      let transformedData = data.map((respItem) => {
+        return {
+          image_url: this.buildMediaUrl(respItem),
+          title: this.ellipsisOverflow(respItem.title),
+          subtitle: respItem.summary,
+          buttons: [
+            {
+              type: 'web_url',
+              url: `https://izi.travel/ru/app?content_lang=en&content_uuid=${respItem.uuid}`,
+              title: 'Check in app'
+            }
+          ]
+        };
+      });
+      return resolve(transformedData);
     }
-    reject('just because');
+    reject('No data received');
   }
 
   getObjects (requestParams) {
-    let transformedRequest = {
-      lat_lon: `${requestParams.location.lat},${requestParams.location.lng}`
-    };
+    try {
+      let transformedRequest = {
+        lat_lon: `${requestParams.location.lat},${requestParams.location.lng}`
+      };
 
-    delete requestParams.location;
-    Object.assign(transformedRequest, requestParams);
+      delete requestParams.location;
+      Object.assign(transformedRequest, requestParams);
 
-    return new Promise((resolve, reject) => {
-      this.fetchObjectsRequest({
-        qs: transformedRequest
-      }, (err, resp, data) => {
-        console.log(data);
+      return new Promise((resolve, reject) => {
+        this.fetchObjectsRequest({
+          qs: transformedRequest
+        }, (err, resp, data) => {
+          if (err) {
+            return reject(err);
+          }
 
-        if (err) {
-          return reject(err);
-        }
-
-        this.transformResponse(data, resolve, reject);
+          this.transformResponse(data, resolve, reject);
+        });
       });
-    });
+    }
+    catch (err) {
+       console.log('Got an error in API request', err);
+       return new Promise((resolve, reject) => {
+         // create promise and reject it right away
+         reject(err);
+       });
+    }
   }
 }
 

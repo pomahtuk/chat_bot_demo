@@ -16,6 +16,16 @@ const validRequest = {
   limit: 1
 };
 
+const validZeroResultsRequest = {
+  type: 'tour',
+  radius: 100,
+  location: {
+    lat: '90',
+    lng: '90'
+  },
+  limit: 1
+};
+
 describe('IZI API client', function () {
   this.timeout(3000);
   this.slow(750);
@@ -32,6 +42,21 @@ describe('IZI API client', function () {
       expect(data).to.be.an('array');
       expect(data).to.have.lengthOf(validRequest.limit);
 
+      done();
+    }, (err) => {
+      expect(err).to.exist;
+
+      done();
+    });
+
+  });
+
+  it('Should handle 0 results for valid request properly', function (done) {
+    let apiRequestResults = clientToTest.getObjects(validZeroResultsRequest);
+
+    apiRequestResults.then((data) => {
+      expect(data).to.be.an('array');
+      expect(data).to.have.lengthOf(0);
       done();
     }, (err) => {
       expect(err).to.exist;

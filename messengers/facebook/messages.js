@@ -22,10 +22,9 @@ const sendMessage = (recipientId, msg, messageCallback) => {
       message: msg
     }
   };
-  fbReq(opts, function (err, resp, data) {
-    // console.log('got fb response:', resp.body);
+  fbReq(opts, function (err) {
     if (messageCallback) {
-      messageCallback(data);
+      messageCallback(err);
     }
   });
 };
@@ -147,7 +146,7 @@ function validateTemplateMessage (msgObject) {
   };
 }
 
-function sendTemplatedMessage (sender, msgObject) {
+function sendTemplatedMessage (sender, msgObject, cb) {
   let messageValidationResult = validateTemplateMessage(msgObject);
 
   if (messageValidationResult.status == 'success') {
@@ -155,7 +154,7 @@ function sendTemplatedMessage (sender, msgObject) {
     // TODO: handle facebook errors
     sendMessage(sender, {
       attachment: msgObject
-    }, null);
+    }, cb);
   } else {
     console.log('Error validating message', messageValidationResult.errors);
   }

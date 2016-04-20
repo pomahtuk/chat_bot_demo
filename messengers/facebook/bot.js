@@ -4,9 +4,11 @@ const fbMessages = require('./messages.js');
 const Session = require('../../models/session.js');
 const envConfig = require('../../env.json');
 const makeWitBot = require('../../wit_bot/bot.js');
+const IZIClient = require('../../api_client');
 const GoogleGeocoder = require('../../tools/geocoder/google.js');
 
 const gCoder = new GoogleGeocoder(envConfig.GOOGLE_KEY);
+const apiClient = new IZIClient(envConfig.IZI_API_KEY);
 
 // Parameters required for app
 const WIT_TOKEN = envConfig.WIT_TOKEN;
@@ -26,9 +28,9 @@ function saveSessionData (sessionParams) {
   }
 
   Session.findByIdAndUpdate(sessionId, updateObj, { new: true }).then(function () {
-    cb(context);
+    cb ? cb(context) : null;
   }, function () {
-    cb(context);
+    cb ? cb(context) : null;
   });
 }
 
@@ -47,42 +49,72 @@ function sendMessage (senderId, msg) {
   }
 }
 
-function makeApiCall (coordinates, context, cb) {
-  switch (context.intent) {
-    case 'tours':
-      context.response = '2 hour tour, 20 POI tour, Super nice tour';
-      break;
-    case 'museums':
-      context.response = 'Super cool museum, other extra cool museum and some shitty one';
-      break;
-    default:
-      console.log('nope');
-  }
+function formTemplatedMessage (context) {
+  let resultingMessage = {
+    type: 'template',
+    payload: {
+      template_type: 'generic',
+      elements: context.response
+    }
+  };
 
-  cb(context);
+  return resultingMessage;
+}
+
+function sendTemplatedMessage (senderId, context) {
+  let templatedMsg = formTemplatedMessage(context);
+
+  if (senderId) {
+    // Yay, we found our recipient!
+    // Let's forward our bot response.
+    fbMessages.sendTemplatedMessage(senderId, templatedMsg, (err) => {
+      if (err) {
+        console.log('Oops! An error occurred while forwarding the response', err);
+      }
+    });
+  } else {
+    console.log('Oops! Couldnt find user for session');
+    // Giving the wheel back to our bot
+  }
+}
+
+function makeApiCall (location, context, cb) {
+  let apiRequestResults = apiClient.getObjects({
+    type: context.intent,
+    location: location.coordinates || location,
+    limit: 10
+  });
+
+  apiRequestResults.then((data) => {
+    context.response = data;
+    cb(context);
+  }, (err) => {
+    console.log('Error geting data from IZI API', err);
+    cb(context);
+  });
 }
 
 const fbActions = {
   say: function (sessionId, context, msg, cb) {
-    console.log(`bot about to say ${msg}`);
+    // console.log(`bot about to say ${msg}`);
+    const TEMPLATE_MSG_STRING = '!!--!!--!!';
 
-    saveSessionData({ sessionId, context, cb: function () {} });
+    saveSessionData({ sessionId, context });
 
     // Our bot has something to say!
     // Let's retrieve the Facebook user whose session belongs to
     Session.findOne({ _id: sessionId }).then(function (sessionData) {
       if (sessionData) {
-        sendMessage(sessionData.senderId, msg);
-        cb(context);
+        msg === TEMPLATE_MSG_STRING ? sendTemplatedMessage(sessionData.senderId, context) : sendMessage(sessionData.senderId, msg);
       } else {
         console.log('Oops! Session data is empty');
-        cb(context);
       }
     }, function (err) {
       // Giving the wheel back to our bot
       console.log('Oops! Couldnt get session data', err);
-      cb(context);
     });
+
+    cb();
   },
   cleanupSessionContext: function (sessionId, context, cb) {
     saveSessionData({ sessionId, context: {}, outOfContext: {}, cb });
@@ -99,7 +131,8 @@ const fbActions = {
           geocodePromise.then((data) => {
             // and make a call to IZI api
             // after this - populate context response field
-            console.log('Got coordinates', data);
+            // console.log('Got coordinates', data);
+            context.location = data.locationName;
             makeApiCall(data, context, cb);
           }, (err) => {
             // we failed here
@@ -141,6 +174,7 @@ FB_WIT.runFbActions = function (sessionData, msg) {
       } else {
         // Our bot did everything it has to do.
         // Now it's waiting for further messages to proceed.
+        // may be delete session?
         console.log('Waiting for futher messages. Current story is over.');
       }
     }

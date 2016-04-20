@@ -51,8 +51,9 @@ connect()
 
 function listen () {
   if (app.get('env') === 'test') return;
-  app.listen(PORT);
-  console.log(`server started at port ${PORT}`);
+  app.listen(PORT, () => {
+    console.log(`server started at port ${PORT}`);
+  });
 }
 
 module.exports = app;
