@@ -24,6 +24,9 @@ const sendMessage = (recipientId, msg, messageCallback) => {
   };
   fbReq(opts, function (err, resp, data) {
     // console.log('got fb response:', resp.body);
+    if (messageCallback) {
+      messageCallback(data);
+    }
   });
 };
 
