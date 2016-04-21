@@ -1,7 +1,13 @@
 'use strict';
 
-// See the Webhook reference
-// https://developers.facebook.com/docs/messenger-platform/webhook-reference
+/**
+ * See the Webhook reference
+ * https://developers.facebook.com/docs/messenger-platform/webhook-reference
+ *
+ * @param  {Object} body       facebook Webhook POST request body
+ * @param  {String} FB_PAGE_ID facebook PAGE_ID
+ * @return {Object|null} User message contents or null
+ */
 const getFirstMessagingEntry = (body, FB_PAGE_ID) => {
   // this one is faulty;
   // does not let postback further
@@ -19,6 +25,11 @@ const getFirstMessagingEntry = (body, FB_PAGE_ID) => {
   return val || null;
 };
 
+/**
+ * Switching attached coordinates format for further processing
+ * @param  {Object} response User message contents
+ * @return {Object} Coordinates of attached location in common format
+ */
 const getCoordinates = (response) => {
   return {
     coordinates: {
@@ -28,6 +39,11 @@ const getCoordinates = (response) => {
   };
 };
 
+/**
+ * Doing some attachments preprocessing
+ * @param  {Array} atts Attachments from user message
+ * @return {Object} Prepered attachment or contents of first one
+ */
 const processAttachments = (atts) => {
   const firstAttachment = atts[0];
 
@@ -44,6 +60,12 @@ const processAttachments = (atts) => {
   return atts;
 };
 
+/**
+ * Generates message either for bot
+ * or for sender based on user input
+ * @param  {Object} messaging - object from Facebook webhook
+ * @return {Object} preformatted object for further processing
+ */
 const prepareBotMessage = (messaging) => {
   // We retrieve the message content
   const atts = messaging.message && messaging.message.attachments;
@@ -59,7 +81,9 @@ const prepareBotMessage = (messaging) => {
     let text = JSON.stringify(postback);
     return {
       msg: `Ok, got you, ${text.substring(0, 200)}`,
-      recepient: 'sender'
+      recepient: 'sender',
+      outOfContext,
+      type: 'text'
     };
   }
 
@@ -73,10 +97,11 @@ const prepareBotMessage = (messaging) => {
     } else {
       return {
         msg: 'Sorry I can only process text messages or location attachments for now.',
-        recepient: 'sender'
+        recepient: 'sender',
+        outOfContext,
+        type: 'text'
       };
     }
-
   }
 
   if (msg) {
@@ -85,7 +110,7 @@ const prepareBotMessage = (messaging) => {
     // This will run all actions until our bot has nothing left to do
     if (msg == 'generic') {
       return {
-        msg: 'look what i have for you',
+        outOfContext,
         recepient: 'sender',
         type: 'templated',
         templatedMsg: {
@@ -120,6 +145,7 @@ const prepareBotMessage = (messaging) => {
       };
     } else if (msg == 'button') {
       return {
+        outOfContext,
         recepient: 'sender',
         type: 'templated',
         templatedMsg: {
@@ -141,6 +167,7 @@ const prepareBotMessage = (messaging) => {
       };
     } else if (msg == 'receipt') {
       return {
+        outOfContext,
         recepient: 'sender',
         type: 'templated',
         templatedMsg: {
@@ -187,7 +214,8 @@ const prepareBotMessage = (messaging) => {
     return {
       msg,
       recepient: 'bot',
-      outOfContext
+      outOfContext,
+      type: 'text'
     };
   }
 };

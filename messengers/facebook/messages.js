@@ -22,6 +22,7 @@ const sendMessage = (recipientId, msg, messageCallback) => {
       message: msg
     }
   };
+  /* istanbul ignore next */
   fbReq(opts, function (err) {
     if (messageCallback && typeof messageCallback === 'function') {
       messageCallback(err);
