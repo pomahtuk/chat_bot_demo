@@ -8,7 +8,7 @@ const IZIClient = require('../../api_client');
 const GoogleGeocoder = require('../../tools/geocoder/google.js');
 
 const gCoder = new GoogleGeocoder(envConfig.GOOGLE_KEY);
-const apiClient = new IZIClient(envConfig.IZI_API_KEY);
+const apiClient = new IZIClient(envConfig.IZI_API_KEY, 'FB');
 
 // Parameters required for app
 const WIT_TOKEN = envConfig.WIT_TOKEN;
@@ -115,6 +115,11 @@ const fbActions = {
     });
 
     cb();
+  },
+  error: (sessionId, context, msg) => {
+    console.log('Bot encountered an error', msg);
+    const emptyFunc = function () {};
+    this.say(sessionId, context, 'I am confused with your request, could we start over?', emptyFunc);
   },
   cleanupSessionContext: function (sessionId, context, cb) {
     saveSessionData({ sessionId, context: {}, outOfContext: {}, cb });

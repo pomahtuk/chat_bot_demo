@@ -7,7 +7,7 @@ const request = require('request');
 
 // api key: 05010cf4-3151-475d-a7ae-5d8ba057424f
 class IZIClient {
-  constructor (apiKey) {
+  constructor (apiKey, messenger) {
     if (!apiKey) {
       throw new Error('no API key provided for IZI.travel API client');
     }
@@ -28,13 +28,14 @@ class IZIClient {
         // cost: 'free',
         // as we do have a limit for cards in fb
         limit: 10,
-        radius: 5000
+        radius: 20000
         // should be passed
         // lat_lon: center.join(','),
       }
     });
 
     this.apiKey = apiKey;
+    this.messenger = messenger;
   }
 
   buildMediaUrl (guide) {
@@ -88,7 +89,7 @@ class IZIClient {
     }
   }
 
-  transformResponse (data, resolve, reject) {
+  transformResponseFB (data, resolve, reject) {
     if (data) {
       let transformedData = data.map((respItem) => {
         return {
@@ -126,7 +127,13 @@ class IZIClient {
             return reject(err);
           }
 
-          this.transformResponse(data, resolve, reject);
+          switch (this.messenger) {
+            case 'FB':
+              this.transformResponseFB(data, resolve, reject);
+              break;
+            default:
+              resolve(data);
+          }
         });
       });
     }

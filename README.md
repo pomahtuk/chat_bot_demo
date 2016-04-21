@@ -1,3 +1,5 @@
 izi_bot
 
-code here
+TODO:
+* handle Postbacks
+* Propper logging
