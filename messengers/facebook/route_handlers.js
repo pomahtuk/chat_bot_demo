@@ -29,7 +29,7 @@ function mainSessionCallback (sessionData, messaging) {
     case 'sender':
       switch (processedMessaging.type) {
         case 'templated':
-          fbMessages.sendTemplatedMessage(sessionData.senderId, processedMessaging.templatedMsg, processedMessaging.msg);
+          fbMessages.sendTemplatedMessage(sessionData.senderId, processedMessaging.templatedMsg);
           break;
         default:
           fbMessages.sendTextMessage(sessionData.senderId, processedMessaging.msg);
@@ -45,7 +45,7 @@ function mainSessionCallback (sessionData, messaging) {
           console.log('Error updating user session', err);
         });
       } else {
-        fbWit.runFbActions(sessionData, processedMessaging.msg); 
+        fbWit.runFbActions(sessionData, processedMessaging.msg);
       }
   }
 }
@@ -54,7 +54,7 @@ function mainRoute (req, res) {
   // Parsing the Messenger API response
   const messaging = fbUtils.getFirstMessagingEntry(req.body, FB_PAGE_ID);
 
-  if (messaging && messaging.message && messaging.recipient.id === FB_PAGE_ID) {
+  if (messaging && (messaging.message || messaging.postback) && messaging.recipient.id === FB_PAGE_ID) {
     // Yay! We got a new message!
     // We retrieve the Facebook user ID of the sender
     const sender = messaging.sender.id;
@@ -73,7 +73,7 @@ function mainRoute (req, res) {
         }, function (err) {
           console.log('Error creating new session', err);
         });
-      }    
+      }
     }, function (err) {
       console.log('Oops! Couldn\'t get session data', err);
     });

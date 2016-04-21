@@ -3,6 +3,8 @@
 // See the Webhook reference
 // https://developers.facebook.com/docs/messenger-platform/webhook-reference
 const getFirstMessagingEntry = (body, FB_PAGE_ID) => {
+  // this one is faulty;
+  // does not let postback further
   const val = body.object == 'page' &&
     body.entry &&
     Array.isArray(body.entry) &&
@@ -28,7 +30,7 @@ const getCoordinates = (response) => {
 
 const processAttachments = (atts) => {
   const firstAttachment = atts[0];
-  
+
   // we are able to process locations only for now
   if (firstAttachment.type == 'location') {
     return {
@@ -38,22 +40,32 @@ const processAttachments = (atts) => {
       outOfContext: getCoordinates(firstAttachment)
     };
   }
-  
+
   return atts;
 };
 
 const prepareBotMessage = (messaging) => {
   // We retrieve the message content
-  const atts = messaging.message.attachments;
-  let msg = messaging.message.text;
+  const atts = messaging.message && messaging.message.attachments;
+  let msg = messaging.message && messaging.message.text;
+  let postback = messaging.postback;
   let outOfContext = null;
 
+  if (postback) {
+    // do not forward anything to bot
+    // handle here
+    console.log(postback);
+    // send message to user
+    let text = JSON.stringify(postback);
+    return {
+      msg: `Ok, got you, ${text.substring(0, 200)}`,
+      recepient: 'sender'
+    };
+  }
+
   if (atts) {
-    console.log('got mesage with attachment:');
-    console.log(JSON.stringify(atts, null, 4));
-    
     let processedAttachment = processAttachments(atts);
-    
+
     if (processedAttachment.msg) {
       // override user input if any
       msg = processedAttachment.msg;
@@ -62,11 +74,11 @@ const prepareBotMessage = (messaging) => {
       return {
         msg: 'Sorry I can only process text messages or location attachments for now.',
         recepient: 'sender'
-      }; 
+      };
     }
 
   }
-  
+
   if (msg) {
     // We received a text message
     // Let's forward the message to the Wit.ai Bot Engine

@@ -23,7 +23,7 @@ const sendMessage = (recipientId, msg, messageCallback) => {
     }
   };
   fbReq(opts, function (err) {
-    if (messageCallback) {
+    if (messageCallback && typeof messageCallback === 'function') {
       messageCallback(err);
     }
   });
