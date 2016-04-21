@@ -8,6 +8,7 @@ const request = require('request');
 // api key: 05010cf4-3151-475d-a7ae-5d8ba057424f
 class IZIClient {
   constructor (apiKey, messenger) {
+    /* istanbul ignore if: no need to check for missing keys */
     if (!apiKey) {
       throw new Error('no API key provided for IZI.travel API client');
     }
@@ -35,7 +36,7 @@ class IZIClient {
     });
 
     this.apiKey = apiKey;
-    this.messenger = messenger;
+    this.messenger = messenger || 'default';
   }
 
   buildMediaUrl (guide) {
@@ -64,20 +65,20 @@ class IZIClient {
     return MEDIA_BASE + '/' + guide.content_provider.uuid + '/' + image.uuid + '_240x180.jpg';
   }
 
-  getDistance (fromPoint, toPoint) {
-    function rad (x) {
-      return x * Math.PI / 180;
-    }
-
-    let R = 6378137, // Earth’s mean radius in meter
-      dLat = rad(toPoint.lat - fromPoint.lat),
-      dLong = rad(toPoint.lng - fromPoint.lng),
-      a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(fromPoint.lat)) * Math.cos(rad(toPoint.lat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2),
-      c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
-      distance = R * c;
-
-    return distance; // returns the distance in meter
-  }
+  // getDistance (fromPoint, toPoint) {
+  //   function rad (x) {
+  //     return x * Math.PI / 180;
+  //   }
+  //
+  //   let R = 6378137, // Earth’s mean radius in meter
+  //     dLat = rad(toPoint.lat - fromPoint.lat),
+  //     dLong = rad(toPoint.lng - fromPoint.lng),
+  //     a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(fromPoint.lat)) * Math.cos(rad(toPoint.lat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2),
+  //     c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
+  //     distance = R * c;
+  //
+  //   return distance; // returns the distance in meter
+  // }
 
   ellipsisOverflow (longString) {
     const STR_LENGTH = 45;
@@ -107,6 +108,7 @@ class IZIClient {
       });
       return resolve(transformedData);
     }
+    /* istanbul ignore next */
     reject('No data received');
   }
 
@@ -123,6 +125,7 @@ class IZIClient {
         this.fetchObjectsRequest({
           qs: transformedRequest
         }, (err, resp, data) => {
+          /* istanbul ignore if */
           if (err) {
             return reject(err);
           }
@@ -137,8 +140,10 @@ class IZIClient {
         });
       });
     }
+    /* istanbul ignore next */
     catch (err) {
        console.log('Got an error in API request', err);
+       console.log(requestParams);
        return new Promise((resolve, reject) => {
          // create promise and reject it right away
          reject(err);
