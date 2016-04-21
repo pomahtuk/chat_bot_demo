@@ -1,4 +1,5 @@
 izi_bot
+=
 
 TODO:
 ==
@@ -7,9 +8,14 @@ TODO:
 
 Links to consider:
 ===
-Custom intelligence:
-https://www.luis.ai/Help
-http://wit.ai
+* Custom intelligence
 
+  <https://www.luis.ai/Help>
 
-https://developers.facebook.com/docs/messenger-platform/
+  <http://wit.ai>
+
+* Developer docs for bots
+
+  <https://developers.facebook.com/docs/messenger-platform/>
+
+  <http://docs.botframework.com/builder/node/overview/#navtitle>
