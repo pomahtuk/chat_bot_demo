@@ -1,7 +1,5 @@
 'use strict';
 
-require('newrelic');
-
 require('pmx').init({
   http : true,
   errors        : true, // Exceptions loggin (default: true)

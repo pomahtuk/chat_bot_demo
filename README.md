@@ -1,21 +1,28 @@
 izi_bot
-=
+==
 
 TODO:
-==
+===
 * handle Postbacks
 * Propper logging
+* Error handling
+* Form proper urls to guides
 
 Links to consider:
 ===
-* Custom intelligence
+* Language processing
 
   <https://www.luis.ai/Help>
 
   <http://wit.ai>
 
-* Developer docs for bots
+* FB messenger platform
 
   <https://developers.facebook.com/docs/messenger-platform/>
+
+
+* MS bot framework
+
+  <http://docs.botframework.com/connector/getstarted/>
 
   <http://docs.botframework.com/builder/node/overview/#navtitle>
