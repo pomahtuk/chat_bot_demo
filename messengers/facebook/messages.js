@@ -157,7 +157,7 @@ function sendTemplatedMessage (sender, msgObject, cb) {
       attachment: msgObject
     }, cb);
   } else {
-    console.log('Error validating message', messageValidationResult.errors);
+    console.error('Error validating message', messageValidationResult.errors);
   }
 }
 

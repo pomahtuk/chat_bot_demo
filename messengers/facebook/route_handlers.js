@@ -42,7 +42,7 @@ function mainSessionCallback (sessionData, messaging) {
         sessionData.save().then((updatedSessionData) => {
           fbWit.runFbActions(updatedSessionData, processedMessaging.msg);
         }, (err) => {
-          console.log('Error updating user session', err);
+          console.error('Error updating user session', err);
         });
       } else {
         fbWit.runFbActions(sessionData, processedMessaging.msg);
@@ -71,11 +71,11 @@ function mainRoute (req, res) {
         newSession.save().then(function (sessionData) {
           mainSessionCallback(sessionData, messaging);
         }, function (err) {
-          console.log('Error creating new session', err);
+          console.error('Error creating new session', err);
         });
       }
     }, function (err) {
-      console.log('Oops! Couldn\'t get session data', err);
+      console.error('Oops! Couldn\'t get session data', err);
     });
   }
 

@@ -29,7 +29,8 @@ function saveSessionData (sessionParams) {
 
   Session.findByIdAndUpdate(sessionId, updateObj, { new: true }).then(function () {
     cb ? cb(context) : null;
-  }, function () {
+  }, function (err) {
+    console.error('Error updating session', err);
     cb ? cb(context) : null;
   });
 }
@@ -40,11 +41,11 @@ function sendMessage (senderId, msg) {
     // Let's forward our bot response.
     fbMessages.sendTextMessage(senderId, msg, function (err) {
       if (err) {
-        console.log('Oops! An error occurred while forwarding the response', err);
+        console.error('Oops! An error occurred while forwarding the response', err);
       }
     });
   } else {
-    console.log('Oops! Couldnt find user for session');
+    console.warn('Oops! Couldnt find user for session');
     // Giving the wheel back to our bot
   }
 }
@@ -69,11 +70,11 @@ function sendTemplatedMessage (senderId, context) {
     // Let's forward our bot response.
     fbMessages.sendTemplatedMessage(senderId, templatedMsg, (err) => {
       if (err) {
-        console.log('Oops! An error occurred while forwarding the response', err);
+        console.error('Oops! An error occurred while forwarding the response', err);
       }
     });
   } else {
-    console.log('Oops! Couldnt find user for session');
+    console.error('Oops! Couldnt find user for session');
     // Giving the wheel back to our bot
   }
 }
@@ -89,7 +90,7 @@ function makeApiCall (location, context, cb) {
     context.response = data;
     cb(context);
   }, (err) => {
-    console.log('Error geting data from IZI API', err);
+    console.error('Error geting data from IZI API', err);
     cb(context);
   });
 }
@@ -107,11 +108,11 @@ const fbActions = {
       if (sessionData) {
         msg === TEMPLATE_MSG_STRING ? sendTemplatedMessage(sessionData.senderId, context) : sendMessage(sessionData.senderId, msg);
       } else {
-        console.log('Oops! Session data is empty');
+        console.warn('Oops! Session data is empty');
       }
     }, function (err) {
       // Giving the wheel back to our bot
-      console.log('Oops! Couldnt get session data', err);
+      console.error('Oops! Couldnt get session data', err);
     });
 
     cb();
@@ -138,25 +139,28 @@ const fbActions = {
             // after this - populate context response field
             // console.log('Got coordinates', data);
             context.location = data.locationName;
+            sendMessage(sessionData.senderId, `Looking for ${context.intent}s in ${context.location}`);
             makeApiCall(data, context, cb);
           }, (err) => {
             // we failed here
-            console.log('Error getting coords from geocoder', err);
+            console.warn('Error getting coords from geocoder', err);
             // respond with generic content
-            context.response = 'Some generic fallback data';
+            // context.response = 'Some generic fallback data';
+            sendMessage(sessionData.senderId, 'Sorry, I could not understand your location, could you be more specific?');
             cb(context);
           });
         } else {
           // we do have coords
+          sendMessage(sessionData.senderId, `Looking for ${context.intent}s in ${context.location}`);
           makeApiCall(coordinates, context, cb);
         }
       } else {
-        console.log('Oops! Session data is empty');
+        console.warn('Oops! Session data is empty');
         cb(context);
       }
     }, function (err) {
       // Giving the wheel back to our bot
-      console.log('Oops! Couldnt get session data', err);
+      console.error('Oops! Couldnt get session data', err);
       cb(context);
     });
 
@@ -175,7 +179,7 @@ FB_WIT.runFbActions = function (sessionData, msg) {
     sessionContext, // the user's current session state
     (error) => {
       if (error) {
-        console.log('Oops! Got an error from Wit:', error);
+        console.error('Oops! Got an error from Wit:', error);
       } else {
         // Our bot did everything it has to do.
         // Now it's waiting for further messages to proceed.

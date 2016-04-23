@@ -65,21 +65,6 @@ class IZIClient {
     return MEDIA_BASE + '/' + guide.content_provider.uuid + '/' + image.uuid + '_240x180.jpg';
   }
 
-  // getDistance (fromPoint, toPoint) {
-  //   function rad (x) {
-  //     return x * Math.PI / 180;
-  //   }
-  //
-  //   let R = 6378137, // Earth’s mean radius in meter
-  //     dLat = rad(toPoint.lat - fromPoint.lat),
-  //     dLong = rad(toPoint.lng - fromPoint.lng),
-  //     a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(rad(fromPoint.lat)) * Math.cos(rad(toPoint.lat)) * Math.sin(dLong / 2) * Math.sin(dLong / 2),
-  //     c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
-  //     distance = R * c;
-  //
-  //   return distance; // returns the distance in meter
-  // }
-
   ellipsisOverflow (longString) {
     const STR_LENGTH = 45;
 
