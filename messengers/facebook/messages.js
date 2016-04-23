@@ -13,7 +13,7 @@ const fbReq = request.defaults({
   headers: { 'Content-Type': 'application/json' }
 });
 
-const sendMessage = (recipientId, msg, messageCallback) => {
+const sendMessage = (recipientId, msg) => {
   const opts = {
     form: {
       recipient: {
@@ -23,9 +23,10 @@ const sendMessage = (recipientId, msg, messageCallback) => {
     }
   };
   /* istanbul ignore next */
-  fbReq(opts, function (err) {
-    if (messageCallback && typeof messageCallback === 'function') {
-      messageCallback(err);
+  fbReq(opts, function (err, resp, data) {
+    let reqError = err || data.error;
+    if (reqError) {
+      console.error('Error sending fb message', reqError);
     }
   });
 };

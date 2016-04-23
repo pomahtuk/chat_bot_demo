@@ -28,8 +28,9 @@ class IZIClient {
         // for now
         // cost: 'free',
         // as we do have a limit for cards in fb
-        limit: 10,
-        radius: 20000
+        limit: 11,
+        // 10 km... need to be more specific about this
+        radius: 10000
         // should be passed
         // lat_lon: center.join(','),
       }
@@ -75,7 +76,7 @@ class IZIClient {
     }
   }
 
-  transformResponseFB (data, resolve, reject) {
+  transformResponseFB (transformedRequest, data, resolve, reject) {
     if (data) {
       let transformedData = data.map((respItem) => {
         return {
@@ -91,7 +92,17 @@ class IZIClient {
           ]
         };
       });
-      return resolve(transformedData);
+      // if we have more than 10 entities in search
+      let nextParams = null;
+      if (transformedData.length > 10) {
+        nextParams = {
+          offset: transformedRequest.offset + 10
+        };
+      }
+      return resolve({
+        next: nextParams,
+        data: transformedData.splice(0, 10)
+      });
     }
     /* istanbul ignore next */
     reject('No data received');
@@ -104,11 +115,13 @@ class IZIClient {
       };
 
       delete requestParams.location;
-      Object.assign(transformedRequest, requestParams);
+      let requestToSend = Object.assign({}, requestParams, transformedRequest, {
+        limit: transformedRequest.limit + 1
+      });
 
       return new Promise((resolve, reject) => {
         this.fetchObjectsRequest({
-          qs: transformedRequest
+          qs: requestToSend
         }, (err, resp, data) => {
           /* istanbul ignore if */
           if (err) {
@@ -117,7 +130,7 @@ class IZIClient {
 
           switch (this.messenger) {
             case 'FB':
-              this.transformResponseFB(data, resolve, reject);
+              this.transformResponseFB(transformedRequest, data, resolve, reject);
               break;
             default:
               resolve(data);
@@ -127,7 +140,7 @@ class IZIClient {
     }
     /* istanbul ignore next */
     catch (err) {
-       console.log('Got an error in API request', err);
+       console.error('Got an error in API request', err);
        console.log(requestParams);
        return new Promise((resolve, reject) => {
          // create promise and reject it right away

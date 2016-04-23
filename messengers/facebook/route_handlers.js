@@ -24,6 +24,8 @@ function facebookVerification (req, res) {
 
 function mainSessionCallback (sessionData, messaging) {
   let processedMessaging = fbUtils.prepareBotMessage(messaging);
+  let userPayloadString =  processedMessaging.postback && processedMessaging.postback.payload;
+  let userPayload = userPayloadString && JSON.parse(userPayloadString);
 
   switch (processedMessaging.recepient) {
     case 'sender':
@@ -33,6 +35,31 @@ function mainSessionCallback (sessionData, messaging) {
           break;
         default:
           fbMessages.sendTextMessage(sessionData.senderId, processedMessaging.msg);
+      }
+      break;
+    case 'server':
+      console.log('got this from user', userPayload);
+      switch (userPayload.type) {
+        case 'loadMore':
+          // indicate loading state for user
+          fbMessages.sendTextMessage(sessionData.senderId, 'One moment, please...');
+          // and grab all data
+          fbUtils.makeApiCall(Object.assign({}, userPayload.requestParams, {
+            cb: (context) => {
+              fbMessages.sendTemplatedMessage(sessionData.senderId, {
+                type: 'template',
+                payload: {
+                  template_type: 'generic',
+                  elements: context.response
+                }
+              });
+            }
+          }));
+          // var moreItemsTemplate;
+          // fbMessages.sendTemplatedMessage(sessionData.senderId, moreItemsTemplate);
+          break;
+        default:
+          console.warn('Unknown payload from user postback', userPayload);
       }
       break;
     default:

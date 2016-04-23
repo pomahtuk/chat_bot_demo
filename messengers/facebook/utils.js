@@ -1,5 +1,10 @@
 'use strict';
 
+const IZIClient = require('../../api_client');
+const envConfig = require('../../env.json');
+const fbMessages = require('./messages.js');
+const apiClient = new IZIClient(envConfig.IZI_API_KEY, 'FB');
+
 /**
  * See the Webhook reference
  * https://developers.facebook.com/docs/messenger-platform/webhook-reference
@@ -8,7 +13,7 @@
  * @param  {String} FB_PAGE_ID facebook PAGE_ID
  * @return {Object|null} User message contents or null
  */
-const getFirstMessagingEntry = (body, FB_PAGE_ID) => {
+function getFirstMessagingEntry (body, FB_PAGE_ID) {
   // this one is faulty;
   // does not let postback further
   const val = body.object == 'page' &&
@@ -23,28 +28,28 @@ const getFirstMessagingEntry = (body, FB_PAGE_ID) => {
     body.entry[0].messaging[0];
 
   return val || null;
-};
+}
 
 /**
  * Switching attached coordinates format for further processing
  * @param  {Object} response User message contents
  * @return {Object} Coordinates of attached location in common format
  */
-const getCoordinates = (response) => {
+function getCoordinates (response) {
   return {
     coordinates: {
       lat: response.payload.coordinates.lat,
       lng: response.payload.coordinates.long
     }
   };
-};
+}
 
 /**
  * Doing some attachments preprocessing
  * @param  {Array} atts Attachments from user message
  * @return {Object} Prepered attachment or contents of first one
  */
-const processAttachments = (atts) => {
+function processAttachments (atts) {
   const firstAttachment = atts[0];
 
   // we are able to process locations only for now
@@ -58,7 +63,7 @@ const processAttachments = (atts) => {
   }
 
   return atts;
-};
+}
 
 /**
  * Generates message either for bot
@@ -66,7 +71,7 @@ const processAttachments = (atts) => {
  * @param  {Object} messaging - object from Facebook webhook
  * @return {Object} preformatted object for further processing
  */
-const prepareBotMessage = (messaging) => {
+function prepareBotMessage (messaging) {
   // We retrieve the message content
   const atts = messaging.message && messaging.message.attachments;
   let msg = messaging.message && messaging.message.text;
@@ -76,14 +81,13 @@ const prepareBotMessage = (messaging) => {
   if (postback) {
     // do not forward anything to bot
     // handle here
-    console.log(postback);
-    // send message to user
-    let text = JSON.stringify(postback);
+    // recepirnt should be server
     return {
-      msg: `Ok, got you, ${text.substring(0, 200)}`,
-      recepient: 'sender',
+      msg: '',
+      recepient: 'server',
       outOfContext,
-      type: 'text'
+      type: 'text',
+      postback
     };
   }
 
@@ -108,64 +112,7 @@ const prepareBotMessage = (messaging) => {
     // We received a text message
     // Let's forward the message to the Wit.ai Bot Engine
     // This will run all actions until our bot has nothing left to do
-    if (msg == 'generic') {
-      return {
-        outOfContext,
-        recepient: 'sender',
-        type: 'templated',
-        templatedMsg: {
-          type: 'template',
-          payload: {
-            template_type: 'generic',
-            elements: [{
-              title: 'First card',
-              subtitle: 'Element #1 of an hscroll',
-              image_url: 'http://messengerdemo.parseapp.com/img/rift.png',
-              buttons: [{
-                type: 'web_url',
-                url: 'https://www.messenger.com/',
-                title: 'Web url'
-              }, {
-                type: 'postback',
-                title: 'Postback',
-                payload: 'Payload for first element in a generic bubble'
-              }]
-            }, {
-              title: 'Second card',
-              subtitle: 'Element #2 of an hscroll',
-              image_url: 'http://messengerdemo.parseapp.com/img/gearvr.png',
-              buttons: [{
-                type: 'postback',
-                title: 'Postback',
-                payload: 'Payload for second element in a generic bubble'
-              }]
-            }]
-          }
-        }
-      };
-    } else if (msg == 'button') {
-      return {
-        outOfContext,
-        recepient: 'sender',
-        type: 'templated',
-        templatedMsg: {
-          type: 'template',
-          payload: {
-            template_type: 'button',
-            text: 'look maa, i have buttons',
-            buttons: [{
-              type: 'web_url',
-              url: 'https://www.messenger.com/',
-              title: 'Web url'
-            }, {
-              type: 'postback',
-              title: 'Postback',
-              payload: 'Payload for first element in a generic bubble'
-            }]
-          }
-        }
-      };
-    } else if (msg == 'receipt') {
+    if (msg == 'receipt') {
       return {
         outOfContext,
         recepient: 'sender',
@@ -218,10 +165,70 @@ const prepareBotMessage = (messaging) => {
       type: 'text'
     };
   }
-};
+}
+
+
+function createTemplatedButtons (msg, buttonsData) {
+  return {
+    type: 'template',
+    payload: {
+      template_type: 'button',
+      text: msg,
+      buttons: buttonsData
+    }
+  };
+}
+
+function makeApiCall (params) {
+  console.log('about to make an api call from utiuls with params', params);
+
+  let requestParams = {
+    type: params.context.intent,
+    location: params.coordinates,
+    radius: params.radius || 5000,
+    limit: 10
+  };
+
+  if (params.offset) {
+    requestParams.offset = params.offset;
+  }
+
+  apiClient.getObjects(requestParams).then((apiResponse) => {
+    if (apiResponse.next) {
+      const TIMEOUT_FOR_SHOW_MORE = 5000;
+      // we have something else to show
+      // send user a message with some delay with option to show more
+      let templatedMsgToSend = createTemplatedButtons('We have a little bit more. Want to check out?', [
+        {
+          type: 'postback',
+          title: 'Load more',
+          payload: JSON.stringify({
+            type: 'loadMore',
+            // i need to remove callback
+            requestParams: Object.assign({}, params, apiResponse.next, { cb: null })
+          })
+        }
+      ]);
+
+      setTimeout(() => {
+        fbMessages.sendTemplatedMessage(params.senderId, templatedMsgToSend, (err) => {
+          if (err) {
+            console.error('Oops! An error occurred while forwarding the response', err);
+          }
+        });
+      }, TIMEOUT_FOR_SHOW_MORE);
+    }
+    params.context.response = apiResponse.data;
+    params.cb && params.cb(params.context);
+  }, (err) => {
+    console.error('Error geting data from IZI API', err);
+    params.cb && params.cb(params.context);
+  });
+}
 
 
 module.exports = {
-  getFirstMessagingEntry: getFirstMessagingEntry,
-  prepareBotMessage: prepareBotMessage
+  getFirstMessagingEntry,
+  prepareBotMessage,
+  makeApiCall
 };
