@@ -180,7 +180,7 @@ function createTemplatedButtons (msg, buttonsData) {
 }
 
 function makeApiCall (params) {
-  console.log('about to make an api call from utiuls with params', params);
+  // console.log('about to make an api call from utiuls with params', params);
 
   let requestParams = {
     type: params.context.intent,

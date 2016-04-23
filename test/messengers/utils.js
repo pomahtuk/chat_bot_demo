@@ -166,18 +166,18 @@ describe('Facebook utilities test', function () {
 
     it('Should process postback from user', function (done) {
       let examinationResult = createAndCheckPreperedResponse(validPostbackBody, FAKE_ID);
-      let postback =  validPostbackBody.entry[0].messaging[0].postback;
+      let postback = validPostbackBody.entry[0].messaging[0].postback;
 
       expect(examinationResult.outOfContext).to.be.null;
       expect(examinationResult).to.have.ownProperty('msg');
-      expect(examinationResult.msg).to.equal(`Ok, got you, ${JSON.stringify(postback).substring(0, 200)}`);
-      expect(examinationResult.recepient).to.equal('sender');
+      expect(examinationResult.recepient).to.equal('server');
+      expect(examinationResult.postback).to.equal(postback);
 
       done();
     });
 
     describe('Should handle keywords from user input differently', function () {
-      ['generic', 'button', 'receipt'].map((keyword) => {
+      ['receipt'].map((keyword) => {
         let validKeywordBody = returnValidWebhookObject('message', {
           'text': keyword
         });

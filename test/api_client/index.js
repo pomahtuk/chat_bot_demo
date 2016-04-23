@@ -41,9 +41,9 @@ const validZeroResultsRequest = {
     it('Should return a list of object in response to valid request', function (done) {
       let apiRequestResults = clientToTest.getObjects(Object.assign({}, validRequest));
 
-      apiRequestResults.then((data) => {
-        expect(data).to.be.an('array');
-        expect(data).to.have.lengthOf(validRequest.limit);
+      apiRequestResults.then((response) => {
+        expect(response.data).to.be.an('array');
+        expect(response.data).to.have.lengthOf(validRequest.limit + 1);
 
         done();
       }, (err) => {
@@ -58,8 +58,8 @@ const validZeroResultsRequest = {
       let apiRequestResults = clientToTest.getObjects(Object.assign({}, validZeroResultsRequest));
 
       apiRequestResults.then((data) => {
-        expect(data).to.be.an('array');
-        expect(data).to.have.lengthOf(0);
+        expect(data.data).to.be.an('array');
+        expect(data.data).to.have.lengthOf(0);
         done();
       }, (err) => {
         expect(err).not.to.exist;

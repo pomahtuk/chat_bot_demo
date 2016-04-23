@@ -99,6 +99,7 @@ class IZIClient {
           offset: transformedRequest.offset + 10
         };
       }
+
       return resolve({
         next: nextParams,
         data: transformedData.splice(0, 10)
@@ -116,7 +117,7 @@ class IZIClient {
 
       delete requestParams.location;
       let requestToSend = Object.assign({}, requestParams, transformedRequest, {
-        limit: transformedRequest.limit + 1
+        limit: requestParams.limit ? requestParams.limit + 1 : 1
       });
 
       return new Promise((resolve, reject) => {
@@ -133,7 +134,10 @@ class IZIClient {
               this.transformResponseFB(transformedRequest, data, resolve, reject);
               break;
             default:
-              resolve(data);
+              resolve({
+                next: null,
+                data
+              });
           }
         });
       });
