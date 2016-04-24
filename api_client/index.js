@@ -30,9 +30,9 @@ class IZIClient {
         // as we do have a limit for cards in fb
         limit: 11,
         // 10 km... need to be more specific about this
-        radius: 10000
+        radius: 10000,
         // should be passed
-        // lat_lon: center.join(','),
+        sort_by: 'popularity:asc'
       }
     });
 
@@ -94,9 +94,12 @@ class IZIClient {
       });
       // if we have more than 10 entities in search
       let nextParams = null;
-      if (transformedData.length > 10) {
+      if (transformedData.length >= transformedRequest.limit) {
+        let nextOffsetRaw = Number(transformedRequest.offset);
+        nextOffsetRaw = isNaN(nextOffsetRaw) ? 0 : nextOffsetRaw;
+
         nextParams = {
-          offset: transformedRequest.offset + 10
+          offset: nextOffsetRaw + (transformedRequest.limit - 1)
         };
       }
 
@@ -131,7 +134,7 @@ class IZIClient {
 
           switch (this.messenger) {
             case 'FB':
-              this.transformResponseFB(transformedRequest, data, resolve, reject);
+              this.transformResponseFB(requestToSend, data, resolve, reject);
               break;
             default:
               resolve({

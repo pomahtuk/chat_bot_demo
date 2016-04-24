@@ -3,10 +3,14 @@ izi_bot
 
 TODO:
 ===
-* handle Postbacks
+* ~~handle Postbacks~~
 * Propper logging
 * Error handling
 * Form proper urls to guides
+
+BUGS:
+===
+* ~~Load more in postback not passing an offset~~
 
 Links to consider:
 ===

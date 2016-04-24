@@ -38,7 +38,7 @@ function mainSessionCallback (sessionData, messaging) {
       }
       break;
     case 'server':
-      console.log('got this from user', userPayload);
+      // console.log('got this from user', userPayload);
       switch (userPayload.type) {
         case 'loadMore':
           // indicate loading state for user
