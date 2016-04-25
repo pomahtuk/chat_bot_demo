@@ -61,9 +61,10 @@ class IZIClient {
     */
 
     const MEDIA_BASE = 'https://media.izi.travel';
-    const image = guide.images[0];
+    const image = guide.images && guide.images[0];
+    const DEFAULT_IMG = 'https://scontent-amt2-1.xx.fbcdn.net/hphotos-ash2/v/t1.0-9/10391011_889037011141062_5245176271614526794_n.png?oh=47c423d4c2447d7448cc7d9561230ed3&oe=57C0D2CE';
 
-    return MEDIA_BASE + '/' + guide.content_provider.uuid + '/' + image.uuid + '_240x180.jpg';
+    return image ? MEDIA_BASE + '/' + guide.content_provider.uuid + '/' + image.uuid + '_240x180.jpg' : DEFAULT_IMG;
   }
 
   ellipsisOverflow (longString) {

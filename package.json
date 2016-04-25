@@ -28,7 +28,7 @@
     "express": "^4.13.4",
     "foreman": "1.4.1",
     "mocha": "^2.4.5",
-    "mongoose": "^4.4.12",
+    "mongoose": "^4.4.13",
     "node-wit": "^3.2.2",
     "pmx": "^0.6.1",
     "request": "^2.72.0",
