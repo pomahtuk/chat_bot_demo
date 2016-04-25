@@ -86,7 +86,7 @@ class IZIClient {
           buttons: [
             {
               type: 'web_url',
-              url: `https://izi.travel/ru/app?content_lang=en&content_uuid=${respItem.uuid}`,
+              url: `https://izi.travel/en/browse/${respItem.uuid}`,
               title: 'Check in app'
             }
           ]
